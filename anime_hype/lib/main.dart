@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/detail_berita.dart';
+import 'package:anime_hype/simpan_berita.dart';
 
 void main() => runApp(const MyApp());
 
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const DetailBerita(),
+      home: const SimpanBerita(),
     );
   }
 }

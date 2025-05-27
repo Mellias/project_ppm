@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:anime_hype/model/anime_place.dart';
 
 class DetailBerita extends StatelessWidget {
-  const DetailBerita({super.key});
+  final AnimePlace animePlace;
+
+  const DetailBerita({super.key, required this.animePlace});
 
   @override
   Widget build(BuildContext context) {
@@ -12,16 +15,18 @@ class DetailBerita extends StatelessWidget {
         backgroundColor: const Color(0xFFBEB9FF),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
+            icon: const Icon(Icons.share), 
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.bookmark_border),
-            onPressed: () {},
+            icon: const Icon(Icons.bookmark_border), 
+            onPressed: () {}
           ),
         ],
       ),
@@ -36,7 +41,7 @@ class DetailBerita extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Spy × Family Umumkan Musim Ketiga Tayang Oktober 2025',
+                  animePlace.judul,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: screenWidth * 0.055,
@@ -49,24 +54,22 @@ class DetailBerita extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
-                      'img/Detail Berita/spy x fam.png',
+                      animePlace.gambar,
                       width: screenWidth * 0.85,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Center(
+                Center(
                   child: Text(
-                    'Image by www.kawai.com',
+                    animePlace.sumberGambar,
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Setelah penantian panjang, musim ketiga dari anime Spy × Family resmi diumumkan akan tayang pada Oktober 2025. '
-                  'Pengumuman ini disampaikan dalam acara Jump Festa 2025, di mana para pengisi suara utama hadir untuk membagikan kabar gembira ini kepada para penggemar.\n\n'
-                  'Meskipun belum banyak detail yang diungkap, antusiasme penggemar meningkat dengan dirilisnya visual promosi terbaru yang menampilkan karakter-karakter utama.',
+                  animePlace.deskripsi.join('\n\n'),
                   textAlign: TextAlign.justify,
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
@@ -83,7 +86,7 @@ class DetailBerita extends StatelessWidget {
         height: 60,
         selectedIndex: 0,
         onDestinationSelected: (int index) {
-          // Handle navigation
+          // Navigasi antar halaman
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
@@ -95,4 +98,4 @@ class DetailBerita extends StatelessWidget {
     );
   }
 }
-         
+
