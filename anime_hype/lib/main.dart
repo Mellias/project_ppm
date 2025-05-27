@@ -13,20 +13,22 @@ class MyApp extends StatelessWidget {
       title: 'Anime Hype',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5351DB)),
-        fontFamily: 'Righteous',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF5351DB), // warna utama (ungu)
+        ),
+        fontFamily: 'Righteous', // font custom kamu
         navigationBarTheme: NavigationBarThemeData(
           indicatorColor: Colors.transparent,
-          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((
-            Set<MaterialState> states,
-          ) {
-            if (states.contains(MaterialState.selected)) {
-              return const IconThemeData(color: Color(0xFF5351DB));
-            }
-            return const IconThemeData(color: Colors.grey);
-          },
-        ),
-        labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 0),
+          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.selected)) {
+                return const IconThemeData(color: Color(0xFF5351DB));
+              }
+              return const IconThemeData(color: Colors.grey);
+            },
+          ),
+          labelTextStyle: MaterialStateProperty.all(
+            const TextStyle(fontSize: 0), // sembunyikan label icon
           ),
         ),
       ),
