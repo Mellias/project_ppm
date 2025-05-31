@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/model/anime_place.dart';
 
-class DetailBerita extends StatelessWidget {
+class DetailBerita extends StatefulWidget {
   final AnimePlace animePlace;
 
   const DetailBerita({super.key, required this.animePlace});
+
+  @override
+  State<DetailBerita> createState() => _DetailBeritaState();
+}
+
+class _DetailBeritaState extends State<DetailBerita> {
+  bool get isBookmarked => bookmarkedPlaces.contains(widget.animePlace);
+
+  void toggleBookmark() {
+    setState(() {
+      if (isBookmarked) {
+        bookmarkedPlaces.remove(widget.animePlace);
+      } else {
+        bookmarkedPlaces.add(widget.animePlace);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +37,13 @@ class DetailBerita extends StatelessWidget {
           },
         ),
         actions: [
+          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
           IconButton(
-            icon: const Icon(Icons.share), 
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.bookmark_border), 
-            onPressed: () {}
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color: isBookmarked ? const Color(0xFF5351DB) : null,
+            ),
+            onPressed: toggleBookmark,
           ),
         ],
       ),
@@ -34,14 +51,14 @@ class DetailBerita extends StatelessWidget {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.06, // tambahkan jarak lebih lebar dari tepi
+              horizontal: screenWidth * 0.06,
               vertical: 16.0,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  animePlace.judul,
+                  widget.animePlace.judul,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: screenWidth * 0.055,
@@ -54,7 +71,7 @@ class DetailBerita extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
-                      animePlace.gambar,
+                      widget.animePlace.gambar,
                       width: screenWidth * 0.85,
                       fit: BoxFit.cover,
                     ),
@@ -63,13 +80,13 @@ class DetailBerita extends StatelessWidget {
                 const SizedBox(height: 8),
                 Center(
                   child: Text(
-                    animePlace.sumberGambar,
+                    widget.animePlace.sumberGambar,
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  animePlace.deskripsi.join('\n\n'),
+                  widget.animePlace.deskripsi.join('\n\n'),
                   textAlign: TextAlign.justify,
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
@@ -84,7 +101,7 @@ class DetailBerita extends StatelessWidget {
       ),
       bottomNavigationBar: NavigationBar(
         height: 60,
-        selectedIndex: 0,
+        selectedIndex: 2,
         onDestinationSelected: (int index) {
           // Navigasi antar halaman
         },
@@ -98,4 +115,3 @@ class DetailBerita extends StatelessWidget {
     );
   }
 }
-

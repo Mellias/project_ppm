@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/simpan_berita.dart';
+import 'package:anime_hype/beranda.dart'; // Ganti import dari simpan_berita ke beranda_berita
 
 void main() => runApp(const MyApp());
 
@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF5351DB), // warna utama (ungu)
+          seedColor: const Color(0xFF5351DB),
         ),
-        fontFamily: 'Righteous', // font custom kamu
+        fontFamily: 'Righteous',
         navigationBarTheme: NavigationBarThemeData(
           indicatorColor: Colors.transparent,
           iconTheme: MaterialStateProperty.resolveWith<IconThemeData>(
@@ -28,11 +28,11 @@ class MyApp extends StatelessWidget {
             },
           ),
           labelTextStyle: MaterialStateProperty.all(
-            const TextStyle(fontSize: 0), // sembunyikan label icon
+            const TextStyle(fontSize: 0),
           ),
         ),
       ),
-      home: const SimpanBerita(),
+      home: const BerandaBerita(), // <-- Ganti dari SimpanBerita ke BerandaBerita
     );
   }
 }

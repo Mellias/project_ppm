@@ -10,6 +10,14 @@ class AnimePlace {
     required this.sumberGambar,
     required this.deskripsi,
   });
+
+  @override
+  bool operator ==(Object other) {
+    return other is AnimePlace && other.judul == judul;
+  }
+
+  @override
+  int get hashCode => judul.hashCode;
 }
 
 var animePlaceList = [
@@ -19,7 +27,7 @@ var animePlaceList = [
     sumberGambar: 'Image by www.kawai.com',
     deskripsi: [
       'Setelah penantian panjang, musim ketiga dari anime Spy × Family resmi diumumkan akan tayang pada Oktober 2025.',
-      'Pengumuman ini disampaikan dalam acara Jump Festa 2025, di mana para pengisi suara utama hadir untuk membagikan kabar gembira ini kepada para penggemar.\n\n',
+      'Pengumuman ini disampaikan dalam acara Jump Festa 2025, di mana para pengisi suara utama hadir untuk membagikan kabar gembira ini kepada para penggemar.',
       'Meskipun belum banyak detail yang diungkap, antusiasme penggemar meningkat dengan dirilisnya visual promosi terbaru yang menampilkan karakter-karakter utama.',
     ],
   ),
@@ -37,8 +45,10 @@ var animePlaceList = [
     gambar: 'img/Detail Berita/Franchise Jujutsu.png',
     sumberGambar: 'Image by www.kawai.com',
     deskripsi: [
-      'Setelah kesuksesan besar “Jujutsu Kaisen 0”, franchise anime fenomenal Jujutsu Kaisen resmi mengumumkan perilisan film terbarunya yang tengah dalam tahap produksi. Pengumuman ini disampaikan langsung oleh studio MAPPA dalam acara tahunan Jump Festa 2025.'
+      'Setelah kesuksesan besar “Jujutsu Kaisen 0”, franchise anime fenomenal Jujutsu Kaisen resmi mengumumkan perilisan film terbarunya yang tengah dalam tahap produksi. Pengumuman ini disampaikan langsung oleh studio MAPPA dalam acara tahunan Jump Festa 2025.',
       'Meskipun judul resminya belum diumumkan, teaser visual yang dirilis menunjukkan siluet misterius dari karakter populer yang diduga akan menjadi pusat cerita. Para penggemar pun langsung berspekulasi bahwa film ini akan mengeksplorasi masa lalu Gojo Satoru atau memperkenalkan arc baru yang belum ditayangkan di serial animenya.',
-],
+    ],
   ),
 ];
+
+List<AnimePlace> bookmarkedPlaces = []; // memastikan list baru terisi kalau berita ditekan tombol bookmark
