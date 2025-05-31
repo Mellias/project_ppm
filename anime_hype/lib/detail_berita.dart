@@ -99,19 +99,19 @@ class _DetailBeritaState extends State<DetailBerita> {
           ),
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: 2,
-        onDestinationSelected: (int index) {
-          // Navigasi antar halaman
-        },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
-          NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
-        ],
-      ),
+      // bottomNavigationBar: NavigationBar(
+      //   height: 60,
+      //   selectedIndex: 2,
+      //   onDestinationSelected: (int index) {
+      //     // Navigasi antar halaman
+      //   },
+      //   destinations: const [
+      //     NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
+      //   ],
+      // ),
     );
   }
 }

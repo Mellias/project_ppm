@@ -34,19 +34,19 @@ class BerandaBerita extends StatelessWidget {
       ),
 
       // Bottom Navigation
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: 0,
-        onDestinationSelected: (int index) {
-          // aksi pindah halaman nanti di sini
-        },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
-          NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
-        ],
-      ),
+      // bottomNavigationBar: NavigationBar(
+      //   height: 60,
+      //   selectedIndex: 0,
+      //   onDestinationSelected: (int index) {
+      //     // aksi pindah halaman nanti di sini
+      //   },
+      //   destinations: const [
+      //     NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
+      //   ],
+      // ),
     );
   }
 

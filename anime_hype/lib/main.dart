@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/beranda.dart'; // Ganti import dari simpan_berita ke beranda_berita
+// import 'package:anime_hype/beranda.dart';
+import 'package:anime_hype/main_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,26 +14,25 @@ class MyApp extends StatelessWidget {
       title: 'Anime Hype',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF5351DB),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5351DB)),
         fontFamily: 'Righteous',
         navigationBarTheme: NavigationBarThemeData(
           indicatorColor: Colors.transparent,
-          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>(
-            (Set<MaterialState> states) {
-              if (states.contains(MaterialState.selected)) {
-                return const IconThemeData(color: Color(0xFF5351DB));
-              }
-              return const IconThemeData(color: Colors.grey);
-            },
-          ),
+          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((
+            Set<MaterialState> states,
+          ) {
+            if (states.contains(MaterialState.selected)) {
+              return const IconThemeData(color: Color(0xFF5351DB));
+            }
+            return const IconThemeData(color: Colors.grey);
+          }),
           labelTextStyle: MaterialStateProperty.all(
             const TextStyle(fontSize: 0),
           ),
         ),
       ),
-      home: const BerandaBerita(), // <-- Ganti dari SimpanBerita ke BerandaBerita
+      home:
+          const MainScreen(),
     );
   }
 }

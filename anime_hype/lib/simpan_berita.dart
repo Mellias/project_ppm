@@ -15,15 +15,16 @@ class _SimpanBeritaState extends State<SimpanBerita> {
     return Scaffold(
       backgroundColor: const Color(0xFFD7D7FF),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFD7D7FF),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   color: Colors.black,
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -119,19 +120,19 @@ class _SimpanBeritaState extends State<SimpanBerita> {
           );
         },
       ),
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: 2,
-        onDestinationSelected: (int index) {
-          // Navigasi antar halaman
-        },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
-          NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
-          NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
-        ],
-      ),
+      // bottomNavigationBar: NavigationBar(
+      //   height: 60,
+      //   selectedIndex: 2,
+      //   onDestinationSelected: (int index) {
+      //     // Navigasi antar halaman
+      //   },
+      //   destinations: const [
+      //     NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
+      //     NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
+      //   ],
+      // ),
     );
   }
 }
