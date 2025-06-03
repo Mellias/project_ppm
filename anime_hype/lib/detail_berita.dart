@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/model/anime_place.dart';
 
+
 class DetailBerita extends StatefulWidget {
   final AnimePlace animePlace;
 

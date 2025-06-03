@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 // import 'package:anime_hype/beranda.dart';
-import 'package:anime_hype/main_screen.dart';
+import 'main_screen.dart';
+import 'anime_viral.dart';
+import 'berita_terbaru.dart';
+import 'trending_topik.dart';
+import 'rekomendasi.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,8 +35,13 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home:
-        const MainScreen(),
+      home: const MainScreen(),
+      routes: {
+        '/anime_viral': (context) => const AnimeViral(),
+        '/berita_terbaru': (context) => const BeritaTerbaru(),
+        '/trending_topik': (context) => const TrendingTopik(),
+        '/rekomendasi': (context) => const Rekomendasi()
+      },
     );
   }
 }

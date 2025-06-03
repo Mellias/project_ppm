@@ -51,4 +51,5 @@ var animePlaceList = [
   ),
 ];
 
-List<AnimePlace> bookmarkedPlaces = []; // memastikan list baru terisi kalau berita ditekan tombol bookmark
+List<AnimePlace> bookmarkedPlaces =
+    []; // memastikan list baru terisi kalau berita ditekan tombol bookmark
