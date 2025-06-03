@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 class ProfilPage extends StatelessWidget {
   const ProfilPage({super.key});
@@ -41,7 +42,9 @@ class ProfilPage extends StatelessWidget {
                       child: const CircleAvatar(
                         radius: 55,
                         backgroundColor: Colors.white,
-                        backgroundImage: AssetImage('gambar/profil_pengguna/joe_sadewa.png'),
+                        backgroundImage: AssetImage(
+                          'gambar/profil_pengguna/joe_sadewa.png',
+                        ),
                       ),
                     ),
                     SizedBox(height: 0),
@@ -56,10 +59,7 @@ class ProfilPage extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Text(
                       'Joesadewa9282@gmail.com',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 32),
                     _buildMenuItem(
@@ -85,7 +85,12 @@ class ProfilPage extends StatelessWidget {
                     _buildMenuItem(
                       icon: Icons.logout,
                       text: 'Logout',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                        );
+                      },
                       isLogout: true,
                     ),
                   ],
