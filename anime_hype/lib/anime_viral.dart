@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:anime_hype/model/anime_place.dart';
+import 'package:anime_hype/detail_berita.dart'; // Pastikan import ini sesuai path kamu
 
 class AnimeViral extends StatelessWidget {
   const AnimeViral({super.key});
@@ -13,67 +15,63 @@ class AnimeViral extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView(
+      body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        children: const [
-          _BeritaCard(
-            imagePath: 'gambar/anime_viral/spy_fam.png',
-            judul: 'Update Musim Ke Tiga SPY X Familly',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/anime_viral/zenitsu.png',
-            judul:
-                'Zenitsu Jadi MVP Demon Slayer Season 4',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/anime_viral/sukuna_gojo.png',
-            judul:
-                'Jujutsu Kaisen Cetak Episode Tergila Sepanjang Masa!',
-          ),
-        ],
+        itemCount: animePlaceList.length,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _BeritaCard(animePlace: animePlaceList[index]),
+        ),
       ),
     );
   }
 }
 
 class _BeritaCard extends StatelessWidget {
-  final String imagePath;
-  final String judul;
+  final AnimePlace animePlace;
 
-  const _BeritaCard({required this.imagePath, required this.judul});
+  const _BeritaCard({required this.animePlace});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
-              width: 200,
-              height: 170,
-              fit: BoxFit.cover,
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetailBerita(animePlace: animePlace),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              judul,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                animePlace.gambar,
+                width: 200,
+                height: 170,
+                fit: BoxFit.cover,
               ),
             ),
-          )
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                animePlace.judul,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
