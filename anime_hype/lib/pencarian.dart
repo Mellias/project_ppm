@@ -101,13 +101,11 @@ class PencarianPage extends StatelessWidget {
   // Grid tombol semua topik
   Widget _buildTopikGrid() {
     final List<String> topik = [
-      'Anime Ter Update',
-      'Anime TerHOT',
+      'Anime Ter-Update',
+      'Anime Ter-HOT',
       'Anime Terbaik',
       'Anime Legend',
-      'Anime Terboik',
-      'Anime Terboik',
-      'Karakter Ter-Tampon',
+      'Karakter Ter-Tampan',
       'Karakter Ter-Kawai',
     ];
 

@@ -8,7 +8,7 @@ class ProfilPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // 🔹 Gambar background di atas
+          // Background image di atas
           Container(
             height: 240,
             decoration: const BoxDecoration(
@@ -19,7 +19,7 @@ class ProfilPage extends StatelessWidget {
             ),
           ),
 
-          // 🔹 Konten scrollable (dibawah foto profil)
+          // Konten scrollable di bawah, dengan warna putih dan border radius
           SingleChildScrollView(
             padding: const EdgeInsets.only(top: 180),
             child: Container(
@@ -31,14 +31,24 @@ class ProfilPage extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Foto profil digeser ke atas supaya overlap background
+                    Transform.translate(
+                      offset: const Offset(0, -45),
+                      child: const CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.white,
+                        backgroundImage: AssetImage('gambar/profil_pengguna/joe_sadewa.png'),
+                      ),
+                    ),
+                    SizedBox(height: 0),
                     const Text(
                       'JOE SADEWA',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF5A3DBD),
                       ),
@@ -81,18 +91,6 @@ class ProfilPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ),
-
-          // 🔹 Foto profil di tengah-tengah
-          Positioned(
-            top: 130,
-            left: MediaQuery.of(context).size.width / 2 - 50,
-            child: const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              backgroundImage:
-                  AssetImage('gambar/profil_pengguna/joe_sadewa.png'),
             ),
           ),
         ],
