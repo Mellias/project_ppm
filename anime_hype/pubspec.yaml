@@ -62,12 +62,15 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - img/Beranda/
-    - img/Berita Favorit/
-    - img/Detail Berita/
-    - img/Login/
-    - img/Profil Pengguna/
-    - img/Rekomendasi/
+    - gambar/anime_viral/
+    - gambar/beranda/
+    - gambar/berita_terbaru/
+    - gambar/detail_berita/
+    - gambar/login/
+    - gambar/profil_pengguna/
+    - gambar/rekomendasi/
+    - gambar/search/
+    - gambar/trending_topik/
 
 
   fonts:

@@ -7,70 +7,73 @@ class BerandaBerita extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFD7D7FF),
-      body: Column(
-        children: [
-          // Bagian header
-          _buildHeader(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Bagian header
+            _buildHeader(context),
 
-          // Grid Kategori
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1,
-              children: [
-                _buildCategoryCard('Berita Terbaru', 'img/Beranda/berita_terbaru.png'),
-                _buildCategoryCard('Trending Topik', 'img/Beranda/trending_topik.png'),
-                _buildCategoryCard('Rekomendasi ForYou', 'img/Beranda/rekomendasi.png'),
-                _buildCategoryCard('Anime Viral', 'img/Beranda/viral.png'),
-              ],
+            const SizedBox(height: 20),
+
+            // Grid Kategori
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  int crossAxisCount = constraints.maxWidth >= 800 ? 4 : 2;
+                  return GridView.count(
+                    crossAxisCount: crossAxisCount,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 6,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 1.1,
+                    children: [
+                      _buildCategoryCard(
+                        'Berita Terbaru',
+                        'gambar/beranda/berita_terbaru.png',
+                      ),
+                      _buildCategoryCard(
+                        'Trending Topik',
+                        'gambar/beranda/trending_topik.png',
+                      ),
+                      _buildCategoryCard(
+                        'Rekomendasi',
+                        'gambar/beranda/rekomendasi.png',
+                      ),
+                      _buildCategoryCard(
+                        'Anime Viral',
+                        'gambar/beranda/viral.png',
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-
-      // Bottom Navigation
-      // bottomNavigationBar: NavigationBar(
-      //   height: 60,
-      //   selectedIndex: 0,
-      //   onDestinationSelected: (int index) {
-      //     // aksi pindah halaman nanti di sini
-      //   },
-      //   destinations: const [
-      //     NavigationDestination(icon: Icon(Icons.home_outlined), label: ''),
-      //     NavigationDestination(icon: Icon(Icons.search_outlined), label: ''),
-      //     NavigationDestination(icon: Icon(Icons.bookmark_outline), label: ''),
-      //     NavigationDestination(icon: Icon(Icons.person_outline), label: ''),
-      //   ],
-      // ),
     );
   }
 
-  /// Bagian header atas (judul + search + gambar hero)
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    double height = MediaQuery.of(context).size.width >= 800 ? 250 : 300;
     return SizedBox(
-      height: 300,
+      height: height,
       child: Stack(
         children: [
-          // Background gambar
           ClipRRect(
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(23),
               bottomRight: Radius.circular(23),
             ),
             child: Image.asset(
-              'img/Beranda/hero section.png',
+              'gambar/beranda/hero_section.png',
               width: double.infinity,
-              height: 300,
+              height: height,
               fit: BoxFit.cover,
             ),
           ),
-
-          // Logo + Search + Gambar
           Positioned(
             top: 40,
             left: 16,
@@ -116,13 +119,6 @@ class BerandaBerita extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Image.asset(
-                    'img/Beranda/Gambar Hero Section.png',
-                    height: 180.0,
-                  ),
-                ),
               ],
             ),
           ),
@@ -131,23 +127,23 @@ class BerandaBerita extends StatelessWidget {
     );
   }
 
-  /// Kartu kategori berita
   Widget _buildCategoryCard(String title, String imagePath) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          padding: const EdgeInsets.only(left: 4, bottom: 4),
           child: Text(
             title,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 16,
               color: Colors.black87,
             ),
           ),
         ),
-        Expanded(
+        AspectRatio(
+          aspectRatio: 1.5,
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xAA6A1B9A),

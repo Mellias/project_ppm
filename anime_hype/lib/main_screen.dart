@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/beranda.dart';
 import 'package:anime_hype/simpan_berita.dart';
+import 'package:anime_hype/pencarian.dart';
+import 'package:anime_hype/profil.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,9 +18,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = const [
     BerandaBerita(),
-    Center(child: Text('Halaman Pencarian')), // placeholder
+    PencarianPage(),
     SimpanBerita(),
-    Center(child: Text('Halaman Profil')),    // placeholder
+    ProfilPage(), // placeholder
   ];
 
   void _onItemTapped(int index) {
@@ -45,4 +47,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-

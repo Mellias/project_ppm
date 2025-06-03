@@ -23,7 +23,7 @@ class AnimePlace {
 var animePlaceList = [
   AnimePlace(
     judul: 'Spy × Family Umumkan Musim Ketiga Tayang Oktober 2025',
-    gambar: 'img/Detail Berita/spy x fam.png',
+    gambar: 'gambar/detail_berita/spyxfam.png',
     sumberGambar: 'Image by www.kawai.com',
     deskripsi: [
       'Setelah penantian panjang, musim ketiga dari anime Spy × Family resmi diumumkan akan tayang pada Oktober 2025.',
@@ -32,8 +32,8 @@ var animePlaceList = [
     ],
   ),
   AnimePlace(
-    judul: 'One Piece:  Petualangan di Pulau Egghead 6 April 2025',
-    gambar: 'img/Detail Berita/One Piece.png',
+    judul: 'One Piece: Petualangan di Pulau Egghead 6 April 2025',
+    gambar: 'gambar/detail_berita/one_piece.png',
     sumberGambar: 'Image by www.kawai.com',
     deskripsi: [
       'Petualangan kru Topi Jerami kini memasuki babak baru yang penuh kejutan di Pulau Egghead, markas ilmuwan jenius Dr. Vegapunk. Dalam episode terbaru yang tayang pada 6 April 2025, para penggemar disambut dengan atmosfer futuristik yang kontras dengan dunia-dunia sebelumnya yang telah dijelajahi Luffy dan kawan-kawan. Visual canggih, teknologi yang belum pernah terlihat sebelumnya, dan kemunculan satelit Vegapunk menambah rasa penasaran dan misteri terhadap apa yang sebenarnya disembunyikan Pemerintah Dunia.',
@@ -42,7 +42,7 @@ var animePlaceList = [
   ),
   AnimePlace(
     judul: 'Franchise Jujutsu Kaisen akan merilis film terbaru',
-    gambar: 'img/Detail Berita/Franchise Jujutsu.png',
+    gambar: 'gambar/detail_berita/franchise_jujutsu.png',
     sumberGambar: 'Image by www.kawai.com',
     deskripsi: [
       'Setelah kesuksesan besar “Jujutsu Kaisen 0”, franchise anime fenomenal Jujutsu Kaisen resmi mengumumkan perilisan film terbarunya yang tengah dalam tahap produksi. Pengumuman ini disampaikan langsung oleh studio MAPPA dalam acara tahunan Jump Festa 2025.',
