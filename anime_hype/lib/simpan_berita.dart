@@ -75,7 +75,7 @@ class _SimpanBeritaState extends State<SimpanBerita> {
           child: Container(color: Colors.grey.shade400, height: 1.0),
         ),
       ),
-      body: buildBody(), // ⬅️ Sekarang valid dan rapi
+      body: buildBody(), // Sekarang valid dan rapi
     );
   }
 }

@@ -58,8 +58,8 @@ class _BeritaCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
               imagePath,
-              width: 200,
-              height: 170,
+              width: 150,
+              height: 150,
               fit: BoxFit.cover,
             ),
           ),
