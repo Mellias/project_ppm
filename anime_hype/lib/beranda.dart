@@ -6,7 +6,7 @@ class BerandaBerita extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD7D7FF),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
