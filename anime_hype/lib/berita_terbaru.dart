@@ -18,13 +18,13 @@ class BeritaTerbaru extends StatelessWidget {
         children: const [
           _BeritaCard(
             imagePath: 'gambar/berita_terbaru/gear_5.png',
-            judul: 'Gear 5 Luffy Mengguncang Dunia Anime, Crunchyroll Down 2 Jam!',
+            judul:
+                'Gear 5 Luffy Mengguncang Dunia Anime, Crunchyroll Down 2 Jam!',
           ),
           SizedBox(height: 16),
           _BeritaCard(
             imagePath: 'gambar/berita_terbaru/one_piece.png',
-            judul:
-                ' One Piece: Petualangan di Pulau Egghead 6 April 2025',
+            judul: 'One Piece: Petualangan di Pulau Egghead 6 April 2025',
           ),
           SizedBox(height: 16),
           _BeritaCard(
@@ -67,12 +67,9 @@ class _BeritaCard extends StatelessWidget {
           Expanded(
             child: Text(
               judul,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
-          )
+          ),
         ],
       ),
     );

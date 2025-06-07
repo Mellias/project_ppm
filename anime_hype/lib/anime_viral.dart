@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/model/anime_place.dart';
-import 'package:anime_hype/detail_berita.dart'; // Pastikan import ini sesuai path kamu
+import 'package:anime_hype/widgets/berita_card.dart';
+import 'package:anime_hype/detail_berita.dart'; 
 
 class AnimeViral extends StatelessWidget {
   const AnimeViral({super.key});
@@ -18,60 +19,25 @@ class AnimeViral extends StatelessWidget {
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: animePlaceList.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: _BeritaCard(animePlace: animePlaceList[index]),
-        ),
-      ),
-    );
-  }
-}
+        itemBuilder: (context, index) {
+          final animePlace = animePlaceList[index];
 
-class _BeritaCard extends StatelessWidget {
-  final AnimePlace animePlace;
-
-  const _BeritaCard({required this.animePlace});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DetailBerita(animePlace: animePlace),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                animePlace.gambar,
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
-              ),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: BeritaCard(
+              judul: animePlace.judul,
+              imagePath: animePlace.gambar,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetailBerita(animePlace: animePlace),
+                  ),
+                );
+              },
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                animePlace.judul,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            )
-          ],
-        ),
+          );
+        },
       ),
     );
   }
