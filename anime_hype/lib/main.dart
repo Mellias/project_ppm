@@ -5,6 +5,8 @@ import 'anime_viral.dart';
 import 'berita_terbaru.dart';
 import 'trending_topik.dart';
 import 'rekomendasi.dart';
+import 'register.dart';
+import 'login.dart';
 
 void main() => runApp(const MyApp());
 
@@ -37,6 +39,8 @@ class MyApp extends StatelessWidget {
       ),
       home: const MainScreen(),
       routes: {
+        '/register': (context) => const RegisterPage(),
+        '/login': (context) => const LoginPage(),
         '/anime_viral': (context) => const AnimeViral(),
         '/berita_terbaru': (context) => const BeritaTerbaru(),
         '/trending_topik': (context) => const TrendingTopik(),

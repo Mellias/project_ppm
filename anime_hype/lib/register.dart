@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Login',
+                            'Register',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class LoginPage extends StatelessWidget {
                             hintText: 'Username',
                             obscure: false,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
 
                           _buildInputField(
                             icon: Icons.lock,
@@ -65,15 +65,10 @@ class LoginPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
 
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                'Forget Password',
-                                style: TextStyle(color: Color(0xFF5A3DBD)),
-                              ),
-                            ),
+                          _buildInputField(
+                            icon: Icons.lock,
+                            hintText: 'Password Confirm',
+                            obscure: true,
                           ),
                           const SizedBox(height: 16),
 
@@ -89,7 +84,7 @@ class LoginPage extends StatelessWidget {
                                 ),
                               ),
                               child: const Text(
-                                'Login',
+                                'Register',
                                 style: TextStyle(fontSize: 16, color: Colors.white),
                               ),
                             ),
@@ -123,13 +118,13 @@ class LoginPage extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Don't have an account? "),
+                              const Text("Already have an account? "),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/register');
+                                  Navigator.pushNamed(context, '/login');
                                 },
                                 child: const Text(
-                                  "Register",
+                                  "Login",
                                   style: TextStyle(
                                     color: Color(0xFF5A3DBD),
                                     fontWeight: FontWeight.bold,
@@ -164,7 +159,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Welcome back to AnimeHype',
+                  'Welcome to AnimeHype',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ],
