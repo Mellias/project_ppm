@@ -1,14 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmController = TextEditingController();
+
+  Future<void> _register() async {
+    // Validasi kecocokan password
+    if (passwordController.text != confirmController.text) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password tidak cocok')),
+      );
+      return;
+    }
+
+    try {
+      // Register akun
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registrasi berhasil')),
+      );
+
+      // Arahkan ke halaman login
+      Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal registrasi: ${e.message}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Gambar background
+          // Background image
           Container(
             height: 280,
             decoration: const BoxDecoration(
@@ -19,11 +61,10 @@ class RegisterPage extends StatelessWidget {
             ),
           ),
 
+          // Form & konten utama
           Column(
             children: [
               const SizedBox(height: 220),
-
-              // Expanded agar bisa scroll fleksibel
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -35,9 +76,12 @@ class RegisterPage extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
                     child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(), // Aktifkan scroll
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -52,9 +96,10 @@ class RegisterPage extends StatelessWidget {
                           const SizedBox(height: 24),
 
                           _buildInputField(
-                            icon: Icons.person,
-                            hintText: 'Username',
+                            icon: Icons.mail,
+                            hintText: 'Email',
                             obscure: false,
+                            controller: emailController,
                           ),
                           const SizedBox(height: 8),
 
@@ -62,6 +107,7 @@ class RegisterPage extends StatelessWidget {
                             icon: Icons.lock,
                             hintText: 'Password',
                             obscure: true,
+                            controller: passwordController,
                           ),
                           const SizedBox(height: 8),
 
@@ -69,6 +115,7 @@ class RegisterPage extends StatelessWidget {
                             icon: Icons.lock,
                             hintText: 'Password Confirm',
                             obscure: true,
+                            controller: confirmController,
                           ),
                           const SizedBox(height: 16),
 
@@ -76,7 +123,7 @@ class RegisterPage extends StatelessWidget {
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: _register,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5A3DBD),
                                 shape: RoundedRectangleBorder(
@@ -85,7 +132,10 @@ class RegisterPage extends StatelessWidget {
                               ),
                               child: const Text(
                                 'Register',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -142,7 +192,7 @@ class RegisterPage extends StatelessWidget {
             ],
           ),
 
-          // Judul besar di atas gambar
+          // Teks di atas gambar
           const Positioned(
             top: 100,
             left: 24,
@@ -170,12 +220,15 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
+  /// Widget input field dengan ikon dan hint
   Widget _buildInputField({
     required IconData icon,
     required String hintText,
     required bool obscure,
+    required TextEditingController controller,
   }) {
     return TextField(
+      controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,

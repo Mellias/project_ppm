@@ -1,14 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  Future<void> _login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login berhasil')),
+      );
+
+      Navigator.pushReplacementNamed(context, '/beranda');
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal login: ${e.message}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Gambar background
           Container(
             height: 280,
             decoration: const BoxDecoration(
@@ -18,12 +49,9 @@ class LoginPage extends StatelessWidget {
               ),
             ),
           ),
-
           Column(
             children: [
               const SizedBox(height: 220),
-
-              // Expanded agar bisa scroll fleksibel
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -35,9 +63,12 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
                     child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(), // Aktifkan scroll
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -50,25 +81,25 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-
                           _buildInputField(
-                            icon: Icons.person,
-                            hintText: 'Username',
+                            icon: Icons.mail,
+                            hintText: 'Email',
                             obscure: false,
+                            controller: emailController,
                           ),
                           const SizedBox(height: 16),
-
                           _buildInputField(
                             icon: Icons.lock,
                             hintText: 'Password',
                             obscure: true,
+                            controller: passwordController,
                           ),
                           const SizedBox(height: 8),
-
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                              },
                               child: const Text(
                                 'Forget Password',
                                 style: TextStyle(color: Color(0xFF5A3DBD)),
@@ -76,12 +107,11 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-
                           SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: _login,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5A3DBD),
                                 shape: RoundedRectangleBorder(
@@ -90,12 +120,14 @@ class LoginPage extends StatelessWidget {
                               ),
                               child: const Text(
                                 'Login',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 16),
-
                           Row(
                             children: const [
                               Expanded(child: Divider()),
@@ -107,7 +139,6 @@ class LoginPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-
                           Center(
                             child: CircleAvatar(
                               radius: 24,
@@ -119,7 +150,6 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -146,8 +176,6 @@ class LoginPage extends StatelessWidget {
               ),
             ],
           ),
-
-          // Judul besar di atas gambar
           const Positioned(
             top: 100,
             left: 24,
@@ -179,8 +207,10 @@ class LoginPage extends StatelessWidget {
     required IconData icon,
     required String hintText,
     required bool obscure,
+    required TextEditingController controller,
   }) {
     return TextField(
+      controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,

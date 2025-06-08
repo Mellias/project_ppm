@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import 'package:anime_hype/beranda.dart';
 import 'main_screen.dart';
 import 'anime_viral.dart';
@@ -8,7 +9,11 @@ import 'rekomendasi.dart';
 import 'register.dart';
 import 'login.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -41,10 +46,11 @@ class MyApp extends StatelessWidget {
       routes: {
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
+        '/beranda': (context) => const MyApp(),
         '/anime_viral': (context) => const AnimeViral(),
         '/berita_terbaru': (context) => const BeritaTerbaru(),
         '/trending_topik': (context) => const TrendingTopik(),
-        '/rekomendasi': (context) => const Rekomendasi()
+        '/rekomendasi': (context) => const Rekomendasi(),
       },
     );
   }
