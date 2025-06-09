@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilPage extends StatelessWidget {
   const ProfilPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Kalau tidak login, arahkan ke halaman login
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/login');
+      });
+      return const SizedBox(); // supaya tidak crash saat build
+    }
+
+    // ✅ Dideklarasikan SEKALI SAJA, setelah null-check
+    final name = user.displayName ?? 'Guest';
+    final email = user.email ?? 'No email';
+
     return Scaffold(
       body: Stack(
         children: [
-          // Background image di atas
           Container(
             height: 240,
             decoration: const BoxDecoration(
@@ -19,8 +33,6 @@ class ProfilPage extends StatelessWidget {
               ),
             ),
           ),
-
-          // Konten scrollable di bawah, dengan warna putih dan border radius
           SingleChildScrollView(
             padding: const EdgeInsets.only(top: 180),
             child: Container(
@@ -36,7 +48,6 @@ class ProfilPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Foto profil digeser ke atas supaya overlap background
                     Transform.translate(
                       offset: const Offset(0, -45),
                       child: const CircleAvatar(
@@ -47,19 +58,19 @@ class ProfilPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 0),
-                    const Text(
-                      'JOE SADEWA',
-                      style: TextStyle(
+                    const SizedBox(height: 0),
+                    Text(
+                      name.toUpperCase(),
+                      style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF5A3DBD),
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Joesadewa9282@gmail.com',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    Text(
+                      email,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 32),
                     _buildMenuItem(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/detail_berita.dart';
-import 'package:anime_hype/model/anime_place.dart';
+import 'package:anime_hype/views/detail_berita.dart';
+import 'package:anime_hype/models/anime_place.dart';
 import 'package:anime_hype/widgets/bookmark_card.dart';
 
 class SimpanBerita extends StatefulWidget {

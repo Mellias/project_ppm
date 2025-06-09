@@ -1,10 +1,10 @@
 // Halaman untuk mengatur navigation bar
 
 import 'package:flutter/material.dart';
-import 'package:anime_hype/beranda.dart';
-import 'package:anime_hype/simpan_berita.dart';
-import 'package:anime_hype/pencarian.dart';
-import 'package:anime_hype/profil.dart';
+import 'package:anime_hype/views/beranda.dart';
+import 'package:anime_hype/views/simpan_berita.dart';
+import 'package:anime_hype/views/pencarian.dart';
+import 'package:anime_hype/views/profil.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
