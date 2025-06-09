@@ -181,7 +181,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             const Text("Already have an account? "),
                             TextButton(
                               onPressed: () {
-                                Navigator.pop(context, '/login');
+                                Navigator.pushNamed(context, '/login');
                               },
                               child: const Text(
                                 "Login",
