@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/views/detail_berita.dart';
 import 'package:anime_hype/models/anime_place.dart';
-import 'package:anime_hype/widgets/bookmark_card.dart';
+import 'package:anime_hype/views/detail_berita.dart';
 
 class SimpanBerita extends StatefulWidget {
   const SimpanBerita({super.key});
@@ -11,7 +10,26 @@ class SimpanBerita extends StatefulWidget {
 }
 
 class _SimpanBeritaState extends State<SimpanBerita> {
-  // Tambahkan fungsi buildBody() DI SINI
+  Widget buildImage(String url) {
+    if (url.startsWith('http')) {
+      return Image.network(
+        url,
+        width: 120,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+      );
+    } else {
+      return Image.asset(
+        url,
+        width: 120,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+      );
+    }
+  }
+
   Widget buildBody() {
     if (bookmarkedPlaces.isEmpty) {
       return const Center(
@@ -23,29 +41,58 @@ class _SimpanBeritaState extends State<SimpanBerita> {
     }
 
     return ListView.builder(
-      itemCount: bookmarkedPlaces.length + 1,
+      itemCount: bookmarkedPlaces.length,
+      padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10.0),
-            child: Text(
-              'Berita Favorit',
-              style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold),
-            ),
-          );
-        }
+        final place = bookmarkedPlaces[index];
 
-        final place = bookmarkedPlaces[index - 1];
-        return BookmarkCard(
-          place: place,
+        return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetailBerita(animePlace: place),
+                builder: (_) => DetailBerita(animePlace: place),
               ),
-            ).then((_) => setState(() {}));
+            ).then((_) => setState(() {})); // refresh
           },
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: buildImage(place.gambar),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          place.judul,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          place.sumberGambar,
+                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -75,7 +122,7 @@ class _SimpanBeritaState extends State<SimpanBerita> {
           child: Container(color: Colors.grey.shade400, height: 1.0),
         ),
       ),
-      body: buildBody(), // Sekarang valid dan rapi
+      body: buildBody(),
     );
   }
 }

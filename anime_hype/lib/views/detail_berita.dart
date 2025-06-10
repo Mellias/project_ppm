@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/models/anime_place.dart';
 
-
 class DetailBerita extends StatefulWidget {
   final AnimePlace animePlace;
 
@@ -22,6 +21,24 @@ class _DetailBeritaState extends State<DetailBerita> {
         bookmarkedPlaces.add(widget.animePlace);
       }
     });
+  }
+
+  Widget buildImage(String imageUrl, double width) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(
+        imageUrl,
+        width: width,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 48),
+      );
+    } else {
+      return Image.asset(
+        imageUrl,
+        width: width,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported, size: 48),
+      );
+    }
   }
 
   @override
@@ -71,18 +88,14 @@ class _DetailBeritaState extends State<DetailBerita> {
                 Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      widget.animePlace.gambar,
-                      width: screenWidth * 0.85,
-                      fit: BoxFit.cover,
-                    ),
+                    child: buildImage(widget.animePlace.gambar, screenWidth * 0.85),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Center(
                   child: Text(
                     widget.animePlace.sumberGambar,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
                 const SizedBox(height: 20),

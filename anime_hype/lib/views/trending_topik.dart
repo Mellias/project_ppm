@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:anime_hype/services/anime_service.dart';
+import 'package:anime_hype/models/anime_place.dart';
+import 'package:anime_hype/views/detail_berita.dart';
 
-class TrendingTopik extends StatelessWidget {
+class TrendingTopik extends StatefulWidget {
   const TrendingTopik({super.key});
+
+  @override
+  State<TrendingTopik> createState() => _TrendingTopikState();
+}
+
+class _TrendingTopikState extends State<TrendingTopik> {
+  late Future<List<dynamic>> topAnime;
+
+  @override
+  void initState() {
+    super.initState();
+    topAnime = AnimeService.fetchTopAnime(); // Ambil dari API
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,36 +29,64 @@ class TrendingTopik extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [
-          _BeritaCard(
-            imagePath: 'gambar/trending_topik/spynfamily.png',
-            judul:
-                'Spy x Family Movie Umumkan Jadwal Rilis, Anya Siap Lakukan Misi Global!',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/trending_topik/tokyo_revengers.png',
-            judul:
-                'Tokyo Revengers Season Baru: Mikey Resmi Jadi Villain, Fans Shock Berat!',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/trending_topik/franchise_jujutsu.png',
-            judul: 'Franchise Jujutsu Kaisen akan merilis film terbaru',
-          ),
-        ],
+      body: FutureBuilder<List<dynamic>>(
+        future: topAnime,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final limitedAnimeList = snapshot.data!.take(4).toList();
+
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: limitedAnimeList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final anime = limitedAnimeList[index];
+
+                // Ubah data API ke AnimePlace
+                final animePlace = AnimePlace(
+                  judul: anime['title'] ?? 'No Title',
+                  gambar: anime['images']['jpg']['image_url'] ?? '',
+                  sumberGambar: 'Image from Jikan API',
+                  deskripsi: [
+                    anime['synopsis'] ?? 'No description available',
+                  ],
+                );
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailBerita(animePlace: animePlace),
+                      ),
+                    ).then((_) => setState(() {})); // Refresh bookmark
+                  },
+                  child: _BeritaCard(
+                    imageUrl: animePlace.gambar,
+                    judul: animePlace.judul,
+                  ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class _BeritaCard extends StatelessWidget {
-  final String imagePath;
+  final String imageUrl;
   final String judul;
 
-  const _BeritaCard({required this.imagePath, required this.judul});
+  const _BeritaCard({
+    required this.imageUrl,
+    required this.judul,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +100,12 @@ class _BeritaCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
-              width: 150,
-              height: 150,
+            child: Image.network(
+              imageUrl,
+              width: 100,
+              height: 100,
               fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
             ),
           ),
           const SizedBox(width: 12),
