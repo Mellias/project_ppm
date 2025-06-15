@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:anime_hype/services/anime_service.dart';
+import 'package:anime_hype/models/anime_place.dart';
+import 'package:anime_hype/views/detail_berita.dart';
 
-class Rekomendasi extends StatelessWidget {
+class Rekomendasi extends StatefulWidget {
   const Rekomendasi({super.key});
+
+  @override
+  State<Rekomendasi> createState() => _RekomendasiState();
+}
+
+class _RekomendasiState extends State<Rekomendasi> {
+  late Future<List<dynamic>> recommendedAnime;
+
+  @override
+  void initState() {
+    super.initState();
+    recommendedAnime = AnimeService.fetchTopAnime(page: 3); // ambil halaman ke-3
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,36 +29,61 @@ class Rekomendasi extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [
-          _BeritaCard(
-            imagePath: 'gambar/rekomendasi/bocchi.png',
-            judul: 'Bocchi the Rock! Jadi Anime Paling Relatable 2025, Fans: “Itu Gue Banget!”',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/rekomendasi/oshinoko.png',
-            judul:
-                'Oshi no Ko Season 2 Hadirkan Drama Industri Idol yang Lebih Gelap dari Sebelumnya!',
-          ),
-          SizedBox(height: 16),
-          _BeritaCard(
-            imagePath: 'gambar/rekomendasi/mashle_magic.png',
-            judul:
-                'Mashle: Magic and Muscles Tuai Pujian — Otot Lebih Hebat dari Sihir?!',
-          ),
-        ],
+      body: FutureBuilder<List<dynamic>>(
+        future: recommendedAnime,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final limitedAnimeList = snapshot.data!.take(5).toList();
+
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: limitedAnimeList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final anime = limitedAnimeList[index];
+
+                final animePlace = AnimePlace(
+                  judul: anime['title'] ?? 'No Title',
+                  gambar: anime['images']['jpg']['image_url'] ?? '',
+                  sumberGambar: 'Image from Jikan API',
+                  deskripsi: [anime['synopsis'] ?? 'No description available'],
+                );
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailBerita(animePlace: animePlace),
+                      ),
+                    ).then((_) => setState(() {}));
+                  },
+                  child: _BeritaCard(
+                    imageUrl: animePlace.gambar,
+                    judul: animePlace.judul,
+                  ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class _BeritaCard extends StatelessWidget {
-  final String imagePath;
+  final String imageUrl;
   final String judul;
 
-  const _BeritaCard({required this.imagePath, required this.judul});
+  const _BeritaCard({
+    required this.imageUrl,
+    required this.judul,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +97,12 @@ class _BeritaCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
-              width: 150,
-              height: 150,
+            child: Image.network(
+              imageUrl,
+              width: 100,
+              height: 100,
               fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
             ),
           ),
           const SizedBox(width: 12),
@@ -72,10 +114,9 @@ class _BeritaCard extends StatelessWidget {
                 fontSize: 14,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-

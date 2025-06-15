@@ -1,9 +1,11 @@
+// Logika otentikasi Firebase
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// ✅ Login
+  /// Login
   Future<User?> loginWithEmail(String email, String password) async {
     try {
       final result = await _auth.signInWithEmailAndPassword(
@@ -16,7 +18,7 @@ class AuthController {
     }
   }
 
-  /// ✅ Register
+  /// Register
   Future<User?> registerWithEmail(String fullName, String email, String password) async {
     try {
       final result = await _auth.createUserWithEmailAndPassword(
@@ -24,22 +26,22 @@ class AuthController {
         password: password,
       );
 
-      // ✅ Update display name
+      // Update display name
       await result.user!.updateDisplayName(fullName);
       await result.user!.reload(); // refresh data user
 
-      return _auth.currentUser;
+      return _auth.currentUser; // ambil user terbaru
     } catch (e) {
       rethrow;
     }
   }
 
-  /// ✅ Logout
+  /// Logout
   Future<void> logout() async {
     await _auth.signOut();
   }
 
-  /// ✅ Get current user (if logged in)
+  /// Ambil user aktif
   User? getCurrentUser() {
     return _auth.currentUser;
   }

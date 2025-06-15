@@ -9,6 +9,7 @@ import 'package:anime_hype/views/rekomendasi.dart';
 import 'package:anime_hype/views/register.dart';
 import 'package:anime_hype/views/login.dart';
 
+// Mengintegrasikan Firebase di Flutter
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

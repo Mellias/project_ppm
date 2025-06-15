@@ -37,7 +37,7 @@ class _TrendingTopikState extends State<TrendingTopik> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            final limitedAnimeList = snapshot.data!.take(4).toList();
+            final limitedAnimeList = snapshot.data!.take(5).toList();
 
             return ListView.separated(
               padding: const EdgeInsets.all(16),
@@ -51,9 +51,7 @@ class _TrendingTopikState extends State<TrendingTopik> {
                   judul: anime['title'] ?? 'No Title',
                   gambar: anime['images']['jpg']['image_url'] ?? '',
                   sumberGambar: 'Image from Jikan API',
-                  deskripsi: [
-                    anime['synopsis'] ?? 'No description available',
-                  ],
+                  deskripsi: [anime['synopsis'] ?? 'No description available'],
                 );
 
                 return GestureDetector(
@@ -83,10 +81,7 @@ class _BeritaCard extends StatelessWidget {
   final String imageUrl;
   final String judul;
 
-  const _BeritaCard({
-    required this.imageUrl,
-    required this.judul,
-  });
+  const _BeritaCard({required this.imageUrl, required this.judul});
 
   @override
   Widget build(BuildContext context) {
