@@ -11,7 +11,7 @@ class BerandaBerita extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(context),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LayoutBuilder(
@@ -79,45 +79,25 @@ class BerandaBerita extends StatelessWidget {
             left: 16,
             right: 16,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end, //pindahkan ke kanan
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'AnimeHype',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        shadows: [
-                          Shadow(
-                            offset: Offset(2, 2),
-                            blurRadius: 4.0,
-                            color: Colors.black54,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        height: 35,
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(7),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8), //beri jarak dari tepi kanan
+                  child: const Text(
+                    'AnimeHype',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(2, 2),
+                          blurRadius: 4.0,
+                          color: Colors.black54,
                         ),
-                        child: const TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            border: InputBorder.none,
-                            prefixIcon: Icon(Icons.search),
-                            contentPadding: EdgeInsets.symmetric(vertical: 6),
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
