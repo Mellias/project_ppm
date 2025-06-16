@@ -12,7 +12,21 @@ import 'package:anime_hype/views/login.dart';
 // Mengintegrasikan Firebase di Flutter
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyADRLBWK1ZxieoPp04YjbIhLjie5DHXEF4",
+        authDomain: "animehype-64d1e.firebaseapp.com",
+        projectId: "animehype-64d1e",
+        storageBucket: "animehype-64d1e.appspot.com",
+        messagingSenderId: "670910281630",
+        appId: "1:670910281630:web:c98c956ceb59a4df6a088f",
+      ),
+    );
+    print("Firebase initialized successfully");
+  } catch (e) {
+    print("Firebase initialization failed: $e");
+  }
   runApp(MyApp());
 }
 
@@ -30,9 +44,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Righteous',
         navigationBarTheme: NavigationBarThemeData(
           indicatorColor: Colors.transparent,
-          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((
-            Set<MaterialState> states,
-          ) {
+          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((states) {
             if (states.contains(MaterialState.selected)) {
               return const IconThemeData(color: Color(0xFF5351DB));
             }
@@ -43,7 +55,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginPage(),
+      home: const Scaffold(
+        body: Center(
+          child: Text('Aplikasi berhasil dijalankan'),
+        ),
+      ),
       routes: {
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
