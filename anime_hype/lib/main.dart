@@ -55,11 +55,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Aplikasi berhasil dijalankan'),
-        ),
-      ),
+      home: const LoginPage(),
       routes: {
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
