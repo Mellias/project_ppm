@@ -83,16 +83,16 @@ class ProfilPage extends StatelessWidget {
                       text: 'Notifikasi',
                       onTap: () {},
                     ),
-                    _buildMenuItem(
-                      icon: Icons.settings_outlined,
-                      text: 'Pengaturan',
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.help_outline,
-                      text: 'Bantuan',
-                      onTap: () {},
-                    ),
+                    // _buildMenuItem(
+                    //   icon: Icons.settings_outlined,
+                    //   text: 'Pengaturan',
+                    //   onTap: () {},
+                    // ),
+                    // _buildMenuItem(
+                    //   icon: Icons.help_outline,
+                    //   text: 'Bantuan',
+                    //   onTap: () {},
+                    // ),
                     _buildMenuItem(
                       icon: Icons.logout,
                       text: 'Logout',

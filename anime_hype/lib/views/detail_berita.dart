@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:anime_hype/models/anime_place.dart';
 
 class DetailBerita extends StatefulWidget {
@@ -55,7 +56,12 @@ class _DetailBeritaState extends State<DetailBerita> {
           },
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.share), onPressed: () {
+            final String shareText = '${widget.animePlace.judul}\n\n'
+              '${widget.animePlace.deskripsi.join('\n\n')}';
+
+            Share.share(shareText);
+          }),
           IconButton(
             icon: Icon(
               isBookmarked ? Icons.bookmark : Icons.bookmark_border,

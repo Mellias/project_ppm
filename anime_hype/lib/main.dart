@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:anime_hype/beranda.dart';
-// import 'main_screen.dart';
-import 'package:anime_hype/views/anime_viral.dart';
-import 'package:anime_hype/views/berita_terbaru.dart';
-import 'package:anime_hype/views/trending_topik.dart';
-import 'package:anime_hype/views/rekomendasi.dart';
-import 'package:anime_hype/views/register.dart';
-import 'package:anime_hype/views/login.dart';
 
-// Mengintegrasikan Firebase di Flutter
+import 'package:anime_hype/views/login.dart';
+import 'package:anime_hype/views/register.dart';
+import 'package:anime_hype/views/pencarian.dart';
+import 'package:anime_hype/views/kategori.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -27,7 +23,7 @@ void main() async {
   } catch (e) {
     print("Firebase initialization failed: $e");
   }
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -56,13 +52,29 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const LoginPage(),
+
+      // ✅ Route statis
       routes: {
-        '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
-        '/anime_viral': (context) => const AnimeViral(),
-        '/berita_terbaru': (context) => const BeritaTerbaru(),
-        '/trending_topik': (context) => const TrendingTopik(),
-        '/rekomendasi': (context) => const Rekomendasi(),
+        '/register': (context) => const RegisterPage(),
+        '/pencarian': (context) => const PencarianPage(),
+      },
+
+      // ✅ Route dinamis untuk kategori
+      onGenerateRoute: (settings) {
+        if (settings.name == '/kategori_detail') {
+          final judul = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (_) => KategoriDetailPage(judul: judul),
+          );
+        }
+
+        // Halaman tidak ditemukan
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('404 - Page not found')),
+          ),
+        );
       },
     );
   }

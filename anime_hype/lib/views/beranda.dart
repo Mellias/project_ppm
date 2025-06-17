@@ -11,7 +11,6 @@ class BerandaBerita extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(context),
-            // const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LayoutBuilder(
@@ -68,7 +67,7 @@ class BerandaBerita extends StatelessWidget {
               bottomRight: Radius.circular(23),
             ),
             child: Image.asset(
-              'gambar/beranda/hero_section.png',
+              'gambar/beranda/hr.png',
               width: double.infinity,
               height: height,
               fit: BoxFit.cover,
@@ -79,11 +78,11 @@ class BerandaBerita extends StatelessWidget {
             left: 16,
             right: 16,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end, //pindahkan ke kanan
-              children: [
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: const [
                 Padding(
-                  padding: const EdgeInsets.only(right: 8), //beri jarak dari tepi kanan
-                  child: const Text(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Text(
                     'AnimeHype',
                     style: TextStyle(
                       color: Colors.white,
@@ -107,7 +106,6 @@ class BerandaBerita extends StatelessWidget {
     );
   }
 
-  // Ubah fungsi ini agar bisa navigasi ke halaman lain
   Widget _buildCategoryCard(
     BuildContext context,
     String title,
@@ -115,15 +113,11 @@ class BerandaBerita extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        if (title == 'Anime Viral') {
-          Navigator.pushNamed(context, '/anime_viral');
-        } else if (title == 'Berita Terbaru') {
-          Navigator.pushNamed(context, '/berita_terbaru');
-        } else if (title == 'Trending Topik') {
-          Navigator.pushNamed(context, '/trending_topik');
-        } else if (title == 'Rekomendasi') {
-          Navigator.pushNamed(context, '/rekomendasi');
-        }
+        Navigator.pushNamed(
+          context,
+          '/kategori_detail',
+          arguments: title,
+        );
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

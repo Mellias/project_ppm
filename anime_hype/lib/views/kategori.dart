@@ -3,20 +3,72 @@ import 'package:anime_hype/services/anime_service.dart';
 import 'package:anime_hype/models/anime_place.dart';
 import 'package:anime_hype/views/detail_berita.dart';
 
-class TrendingTopik extends StatefulWidget {
-  const TrendingTopik({super.key});
+class KategoriDetailPage extends StatefulWidget {
+  final String judul;
+
+  const KategoriDetailPage({super.key, required this.judul});
 
   @override
-  State<TrendingTopik> createState() => _TrendingTopikState();
+  State<KategoriDetailPage> createState() => _KategoriDetailPageState();
 }
 
-class _TrendingTopikState extends State<TrendingTopik> {
-  late Future<List<dynamic>> topAnime;
+class _KategoriDetailPageState extends State<KategoriDetailPage> {
+  late Future<List<dynamic>> _animeList;
 
   @override
   void initState() {
     super.initState();
-    topAnime = AnimeService.fetchTopAnime(); // Ambil dari API
+    final page = getPageForJudul(widget.judul);
+    _animeList = AnimeService.fetchTopAnime(page: page);
+  }
+
+  int getPageForJudul(String judul) {
+    final pageMap = {
+      'rekomendasi': 1,
+      'anime viral': 2,
+      'berita terbaru': 3,
+      'trending topik': 4,
+      'winter anime': 5,
+      'spring anime': 6,
+      'summer anime': 7,
+      'fall anime': 8,
+      'top 4/ranking': 9,
+      'coming soon': 10,
+      'mangaka highlight': 11,
+      'karakter populer': 12,
+      'rekomendasi mingguan': 13,
+      'top 4 manga': 14,
+    };
+    return pageMap[judul.toLowerCase()] ?? 1;
+  }
+
+  int getJumlahBerita(String judul) {
+    final lower = judul.toLowerCase();
+    if ([
+      'rekomendasi',
+      'anime viral',
+      'berita terbaru',
+      'trending topik'
+    ].contains(lower)) {
+      return 5;
+    } else if ([
+      'winter anime',
+      'spring anime',
+      'summer anime',
+      'fall anime'
+    ].contains(lower)) {
+      return 3;
+    } else if ([
+      'top 4/ranking',
+      'coming soon',
+      'mangaka highlight',
+      'karakter populer',
+      'rekomendasi mingguan',
+      'top 4 manga'
+    ].contains(lower)) {
+      return 4;
+    }
+    return 5;
   }
 
   @override
@@ -24,34 +76,33 @@ class _TrendingTopikState extends State<TrendingTopik> {
     return Scaffold(
       backgroundColor: const Color(0xFFD7D7FF),
       appBar: AppBar(
-        title: const Text('Trending Topik'),
+        title: Text(widget.judul),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
         elevation: 0,
       ),
       body: FutureBuilder<List<dynamic>>(
-        future: topAnime,
+        future: _animeList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            final limitedAnimeList = snapshot.data!.take(5).toList();
+            final jumlah = getJumlahBerita(widget.judul);
+            final data = snapshot.data!.take(jumlah).toList();
 
             return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: limitedAnimeList.length,
+              itemCount: data.length,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                final anime = limitedAnimeList[index];
-
-                // Ubah data API ke AnimePlace
+                final anime = data[index];
                 final animePlace = AnimePlace(
-                  judul: anime['title'] ?? 'No Title',
-                  gambar: anime['images']['jpg']['image_url'] ?? '',
+                  judul: anime['title'],
+                  gambar: anime['images']['jpg']['image_url'],
                   sumberGambar: 'Image from Jikan API',
-                  deskripsi: [anime['synopsis'] ?? 'No description available'],
+                  deskripsi: [anime['synopsis'] ?? ''],
                 );
 
                 return GestureDetector(
@@ -61,12 +112,9 @@ class _TrendingTopikState extends State<TrendingTopik> {
                       MaterialPageRoute(
                         builder: (_) => DetailBerita(animePlace: animePlace),
                       ),
-                    ).then((_) => setState(() {})); // Refresh bookmark
+                    );
                   },
-                  child: _BeritaCard(
-                    imageUrl: animePlace.gambar,
-                    judul: animePlace.judul,
-                  ),
+                  child: _AnimeCard(animePlace: animePlace),
                 );
               },
             );
@@ -77,11 +125,10 @@ class _TrendingTopikState extends State<TrendingTopik> {
   }
 }
 
-class _BeritaCard extends StatelessWidget {
-  final String imageUrl;
-  final String judul;
+class _AnimeCard extends StatelessWidget {
+  final AnimePlace animePlace;
 
-  const _BeritaCard({required this.imageUrl, required this.judul});
+  const _AnimeCard({required this.animePlace});
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +143,7 @@ class _BeritaCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              imageUrl,
+              animePlace.gambar,
               width: 100,
               height: 100,
               fit: BoxFit.cover,
@@ -106,8 +153,11 @@ class _BeritaCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              judul,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              animePlace.judul,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
