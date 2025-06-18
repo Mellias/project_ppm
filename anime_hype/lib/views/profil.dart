@@ -25,7 +25,7 @@ class ProfilPage extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            height: 240,
+            height: 250,
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('gambar/profil_pengguna/profil.png'),
@@ -52,7 +52,7 @@ class ProfilPage extends StatelessWidget {
                       offset: const Offset(0, -45),
                       child: const CircleAvatar(
                         radius: 55,
-                        backgroundColor: Colors.white,
+                        backgroundColor: Color(0xFF5A3DBD),
                         backgroundImage: AssetImage(
                           'gambar/profil_pengguna/joe_sadewa.png',
                         ),
@@ -67,32 +67,39 @@ class ProfilPage extends StatelessWidget {
                         color: Color(0xFF5A3DBD),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
                     Text(
                       email,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
                     _buildMenuItem(
                       icon: Icons.edit,
                       text: 'Edit Profil',
                       onTap: () {},
                     ),
+                    const SizedBox(height: 5),
                     _buildMenuItem(
-                      icon: Icons.notifications_none,
-                      text: 'Notifikasi',
-                      onTap: () {},
+                      icon: Icons.bookmark,
+                      text: 'Berita Tersimpan',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/simpan_berita');
+                      },
                     ),
+                    const SizedBox(height: 5),
                     // _buildMenuItem(
                     //   icon: Icons.settings_outlined,
                     //   text: 'Pengaturan',
                     //   onTap: () {},
                     // ),
-                    // _buildMenuItem(
-                    //   icon: Icons.help_outline,
-                    //   text: 'Bantuan',
-                    //   onTap: () {},
-                    // ),
+                    _buildMenuItem(
+                      icon: Icons.help_outline,
+                      text: 'Bantuan',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/bantuan');
+                      },
+                    ),
+                    const SizedBox(height: 5),
                     _buildMenuItem(
                       icon: Icons.logout,
                       text: 'Logout',
@@ -126,10 +133,19 @@ class ProfilPage extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          width: double.infinity, // ✅ Lebar penuh
+          margin: const EdgeInsets.symmetric(horizontal: 0), // opsional
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20), // bisa ditambah
           decoration: BoxDecoration(
             color: isLogout ? const Color(0xFFFFF0F0) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -137,19 +153,20 @@ class ProfilPage extends StatelessWidget {
                 icon,
                 color: isLogout ? Colors.red : const Color(0xFF5A3DBD),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               Expanded(
                 child: Text(
                   text,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
+                    fontSize: 16,
                     color: isLogout ? Colors.red : Colors.black,
                   ),
                 ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                size: 16,
+                size: 18,
                 color: isLogout ? Colors.red : Colors.black,
               ),
             ],

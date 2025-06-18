@@ -57,7 +57,9 @@ class _SimpanBeritaState extends State<SimpanBerita> {
           },
           child: Card(
             elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -84,10 +86,51 @@ class _SimpanBeritaState extends State<SimpanBerita> {
                         const SizedBox(height: 8),
                         Text(
                           place.sumberGambar,
-                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Hapus Berita?',
+                          style: TextStyle(
+                            color: Color(0xFF5A3DBD),
+                            fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          content: const Text(
+                            'Apakah kamu yakin ingin menghapus berita ini dari bookmark?',
+                            style: TextStyle(color: Color(0xFF5A3DBD)),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Batal', style: TextStyle(color: Colors.black)),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  bookmarkedPlaces.removeAt(index);
+                                });
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -103,20 +146,9 @@ class _SimpanBeritaState extends State<SimpanBerita> {
     return Scaffold(
       backgroundColor: const Color(0xFFD7D7FF),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFD7D7FF),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red,
-            onPressed: () {
-              setState(() {
-                bookmarkedPlaces.clear();
-              });
-            },
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(color: Colors.grey.shade400, height: 1.0),

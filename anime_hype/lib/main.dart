@@ -5,6 +5,8 @@ import 'package:anime_hype/views/login.dart';
 import 'package:anime_hype/views/register.dart';
 import 'package:anime_hype/views/pencarian.dart';
 import 'package:anime_hype/views/kategori.dart';
+import 'package:anime_hype/views/bantuan.dart';
+import 'package:anime_hype/views/simpan_berita.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +60,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/pencarian': (context) => const PencarianPage(),
+        '/bantuan': (context) => const BantuanPage(),
+        '/simpan_berita': (context) => const SimpanBerita(),
       },
 
       // ✅ Route dinamis untuk kategori
@@ -71,9 +75,8 @@ class MyApp extends StatelessWidget {
 
         // Halaman tidak ditemukan
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('404 - Page not found')),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('404 - Page not found'))),
         );
       },
     );
