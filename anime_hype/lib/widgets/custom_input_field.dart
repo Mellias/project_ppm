@@ -8,6 +8,7 @@ class CustomInputField extends StatelessWidget {
   final bool obscure;
   final TextEditingController controller;
   final VoidCallback? toggleObscure;
+  final Function(String)? onSubmitted; // Tambahkan parameter onSubmitted
 
   const CustomInputField({
     super.key,
@@ -16,6 +17,7 @@ class CustomInputField extends StatelessWidget {
     required this.obscure,
     required this.controller,
     this.toggleObscure,
+    this.onSubmitted, // Tambahkan parameter onSubmitted
   });
 
   @override
@@ -41,6 +43,7 @@ class CustomInputField extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
+      onSubmitted: onSubmitted, // Gunakan onSubmitted
     );
   }
 }

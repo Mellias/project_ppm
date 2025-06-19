@@ -124,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: 'Input your email',
                           obscure: false,
                           controller: emailController,
+                          onSubmitted: (_) => _login(), // Menangani tombol Enter
                         ),
                         const SizedBox(height: 16),
 
@@ -139,6 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                               _obscurePassword = !_obscurePassword;
                             });
                           },
+                          onSubmitted: (_) => _login(), // Menangani tombol Enter
                         ),
                         const SizedBox(height: 24),
 
