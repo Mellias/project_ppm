@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/controllers/auth_controller.dart';
 import 'package:anime_hype/widgets/custom_input_field.dart';
-import 'package:anime_hype/views/main_screen.dart';
+import 'package:anime_hype/views/navbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,10 +14,21 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   final AuthController _authController = AuthController();
 
   Future<void> _login() async {
+    // Validasi input kosong
+    if (emailController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password tidak boleh kosong')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
     try {
       final user = await _authController.loginWithEmail(
         emailController.text.trim(),
@@ -37,9 +48,20 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       if (!mounted) return;
+
+      // Menampilkan error yang lebih ramah
+      String errorMessage = 'Gagal login. Coba lagi.';
+      if (e.toString().contains('user-not-found')) {
+        errorMessage = 'Akun tidak ditemukan.';
+      } else if (e.toString().contains('wrong-password')) {
+        errorMessage = 'Password salah.';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal login: $e')),
+        SnackBar(content: Text(errorMessage)),
       );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -55,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
+          // Header gambar
           Container(
             height: 280,
             decoration: const BoxDecoration(
@@ -64,6 +87,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+
+          // Form login
           Column(
             children: [
               const SizedBox(height: 220),
@@ -117,24 +142,31 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 24),
 
+                        // Tombol login
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: _login,
+                            onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF5A3DBD),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(fontSize: 16, color: Colors.white),
-                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2,
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 24),
+
+                        // Navigasi ke register
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -160,6 +192,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
+
+          // Header teks
           const Positioned(
             top: 100,
             left: 24,

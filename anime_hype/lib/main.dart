@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // ✅ Tambahkan ini
+import 'dart:developer' as dev;
 
 import 'package:anime_hype/views/login.dart';
 import 'package:anime_hype/views/register.dart';
@@ -7,6 +9,8 @@ import 'package:anime_hype/views/pencarian.dart';
 import 'package:anime_hype/views/kategori.dart';
 import 'package:anime_hype/views/bantuan.dart';
 import 'package:anime_hype/views/simpan_berita.dart';
+import 'package:anime_hype/views/edit_profil.dart';
+import 'package:anime_hype/views/navbar.dart'; // ✅ Pastikan ini mengandung class `MainScreen`
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +25,9 @@ void main() async {
         appId: "1:670910281630:web:c98c956ceb59a4df6a088f",
       ),
     );
-    print("Firebase initialized successfully");
+    dev.log("Firebase initialized successfully");
   } catch (e) {
-    print("Firebase initialization failed: $e");
+    dev.log("Firebase initialization failed: $e");
   }
   runApp(const MyApp());
 }
@@ -42,29 +46,43 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Righteous',
         navigationBarTheme: NavigationBarThemeData(
           indicatorColor: Colors.transparent,
-          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((states) {
-            if (states.contains(MaterialState.selected)) {
+          iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+            if (states.contains(WidgetState.selected)) {
               return const IconThemeData(color: Color(0xFF5351DB));
             }
             return const IconThemeData(color: Colors.grey);
           }),
-          labelTextStyle: MaterialStateProperty.all(
-            const TextStyle(fontSize: 0),
-          ),
+          labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 0)),
         ),
       ),
-      home: const LoginPage(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-      // ✅ Route statis
+          if (snapshot.hasData) {
+            return const MainScreen(); // ✅ Pastikan ini benar-benar ada
+          }
+
+          return const LoginPage();
+        },
+      ),
+
+      // Route statis
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/pencarian': (context) => const PencarianPage(),
         '/bantuan': (context) => const BantuanPage(),
         '/simpan_berita': (context) => const SimpanBerita(),
+        '/edit_profil': (context) => const EditProfilPage(),
       },
 
-      // ✅ Route dinamis untuk kategori
+      // Route dinamis untuk kategori
       onGenerateRoute: (settings) {
         if (settings.name == '/kategori_detail') {
           final judul = settings.arguments as String;
@@ -73,7 +91,6 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        // Halaman tidak ditemukan
         return MaterialPageRoute(
           builder: (_) =>
               const Scaffold(body: Center(child: Text('404 - Page not found'))),

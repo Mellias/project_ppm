@@ -4,7 +4,7 @@ import 'dart:convert';
 class AnimeService {
   static const String baseUrl = 'https://api.jikan.moe/v4';
 
-  /// ✅ Fungsi fleksibel untuk ambil top anime (default page = 1)
+  /// Fungsi fleksibel untuk ambil top anime (default page = 1)
   static Future<List<dynamic>> fetchTopAnime({int page = 1}) async {
     final url = Uri.parse('$baseUrl/top/anime?page=$page');
     final response = await http.get(url);

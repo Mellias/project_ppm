@@ -17,23 +17,37 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _isLoading = false;
 
   final AuthController _authController = AuthController();
 
   Future<void> _register() async {
-    if (passwordController.text != confirmController.text) {
-      if (!mounted) return;
+    final fullName = fullNameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmController.text.trim();
+
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua kolom wajib diisi')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password tidak cocok')),
       );
       return;
     }
 
+    setState(() => _isLoading = true);
+
     try {
       final user = await _authController.registerWithEmail(
-        fullNameController.text.trim(),
-        emailController.text.trim(),
-        passwordController.text.trim(),
+        fullName,
+        email,
+        password,
       );
 
       if (!mounted) return;
@@ -46,9 +60,17 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (!mounted) return;
+
+      String errorMessage = 'Registrasi gagal. Coba lagi.';
+      if (e.toString().contains('email-already-in-use')) {
+        errorMessage = 'Email sudah digunakan.';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal registrasi: $e')),
+        SnackBar(content: Text(errorMessage)),
       );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -160,17 +182,21 @@ class _RegisterPageState extends State<RegisterPage> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: _register,
+                            onPressed: _isLoading ? null : _register,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF5A3DBD),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            child: const Text(
-                              'Register',
-                              style: TextStyle(fontSize: 16, color: Colors.white),
-                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2,
+                                  )
+                                : const Text(
+                                    'Register',
+                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 24),
