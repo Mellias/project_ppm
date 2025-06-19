@@ -26,22 +26,22 @@ class BerandaBerita extends StatelessWidget {
                     children: [
                       _buildCategoryCard(
                         context,
-                        'Berita Terbaru',
+                        'Anime Trending',
                         'gambar/beranda/berita_terbaru.png',
                       ),
                       _buildCategoryCard(
                         context,
-                        'Trending Topik',
+                        'Anime Seasonal',
                         'gambar/beranda/trending_topik.png',
                       ),
                       _buildCategoryCard(
                         context,
-                        'Rekomendasi',
+                        'Ongoing Manga',
                         'gambar/beranda/rekomendasi.png',
                       ),
                       _buildCategoryCard(
                         context,
-                        'Anime Viral',
+                        'Anime Populer',
                         'gambar/beranda/viral.png',
                       ),
                     ],

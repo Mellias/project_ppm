@@ -1,7 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class PencarianPage extends StatelessWidget {
+class PencarianPage extends StatefulWidget {
   const PencarianPage({super.key});
+
+  @override
+  State<PencarianPage> createState() => _PencarianPageState();
+}
+
+class _PencarianPageState extends State<PencarianPage> {
+  final TextEditingController _searchController = TextEditingController();
+  Map<String, List<dynamic>> _searchResults = {'anime': [], 'manga': [], 'characters': []};
+  bool _isLoading = false;
+
+  Future<void> _searchAll(String query) async {
+    if (query.isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final responses = await Future.wait([
+        http.get(Uri.parse('https://api.jikan.moe/v4/anime?q=$query')),
+        http.get(Uri.parse('https://api.jikan.moe/v4/manga?q=$query')),
+        http.get(Uri.parse('https://api.jikan.moe/v4/characters?q=$query')),
+      ]);
+
+      setState(() {
+        _searchResults = {
+          'anime': responses[0].statusCode == 200 ? json.decode(responses[0].body)['data'] ?? [] : [],
+          'manga': responses[1].statusCode == 200 ? json.decode(responses[1].body)['data'] ?? [] : [],
+          'characters': responses[2].statusCode == 200 ? json.decode(responses[2].body)['data'] ?? [] : [],
+        };
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,19 +55,10 @@ class PencarianPage extends StatelessWidget {
             children: [
               _buildSearchHeader(),
               const SizedBox(height: 24),
-              const Text(
-                'Rekomendasi',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              _buildRekomendasiList(context),
-              const SizedBox(height: 24),
-              const Text(
-                'Semua Topik',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              _buildTopikGrid(context),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                _buildContent(),
             ],
           ),
         ),
@@ -43,13 +74,108 @@ class PencarianPage extends StatelessWidget {
         color: const Color(0xFFEDEBFB),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Text(
-        'Mau Kepo-in Apa Nih?',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-        ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Cari Anime, Manga, atau Karakter',
+                border: InputBorder.none,
+              ),
+              onSubmitted: _searchAll,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => _searchAll(_searchController.text),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_searchResults['anime']!.isEmpty &&
+        _searchResults['manga']!.isEmpty &&
+        _searchResults['characters']!.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Rekomendasi',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          _buildRekomendasiList(context),
+          const SizedBox(height: 24),
+          const Text(
+            'Semua Topik',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          _buildTopikGrid(context),
+        ],
+      );
+    } else {
+      return _buildSearchResults();
+    }
+  }
+
+  Widget _buildSearchResults() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCategorySection('Anime', _searchResults['anime'] ?? []),
+        const SizedBox(height: 16),
+        _buildCategorySection('Manga', _searchResults['manga'] ?? []),
+        const SizedBox(height: 16),
+        _buildCategorySection('Characters', _searchResults['characters'] ?? []),
+      ],
+    );
+  }
+
+  Widget _buildCategorySection(String title, List<dynamic> items) {
+    if (items.isEmpty) return const SizedBox();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return ListTile(
+              leading: item['images'] != null
+                  ? Image.network(
+                      item['images']['jpg']['image_url'],
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                  : const Icon(Icons.image_not_supported),
+              title: Text(item['title'] ?? item['name'] ?? 'Unknown'),
+              subtitle: Text(item['type'] ?? 'Unknown'),
+              onTap: () {
+                if (item is Map<String, dynamic>) {
+                  Navigator.pushNamed(
+                    context,
+                    '/detail',
+                    arguments: item,
+                  );
+                }
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 

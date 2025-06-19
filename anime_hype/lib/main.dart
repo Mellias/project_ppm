@@ -11,6 +11,7 @@ import 'package:anime_hype/views/bantuan.dart';
 import 'package:anime_hype/views/simpan_berita.dart';
 import 'package:anime_hype/views/edit_profil.dart';
 import 'package:anime_hype/views/navbar.dart'; // ✅ Pastikan ini mengandung class `MainScreen`
+import 'package:anime_hype/views/detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,16 @@ class MyApp extends StatelessWidget {
         '/bantuan': (context) => const BantuanPage(),
         '/simpan_berita': (context) => const SimpanBerita(),
         '/edit_profil': (context) => const EditProfilPage(),
+        '/detail': (context) {
+          final arguments = ModalRoute.of(context)!.settings.arguments;
+          if (arguments is Map<String, dynamic>) {
+            return DetailPage(item: arguments);
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Invalid data passed to detail page')),
+            );
+          }
+        },
       },
 
       // Route dinamis untuk kategori

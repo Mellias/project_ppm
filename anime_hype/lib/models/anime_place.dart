@@ -3,12 +3,16 @@ class AnimePlace {
   String gambar;
   String sumberGambar;
   List<String> deskripsi;
+  String title; // Tambahkan properti title
+  String description; // Tambahkan properti description
 
   AnimePlace({
     required this.judul,
     required this.gambar,
     required this.sumberGambar,
     required this.deskripsi,
+    required this.title, // Tambahkan ke konstruktor
+    required this.description, // Tambahkan ke konstruktor
   });
 
   @override

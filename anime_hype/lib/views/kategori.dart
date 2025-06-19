@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/services/anime_service.dart';
-import 'package:anime_hype/models/anime_place.dart';
 import 'package:anime_hype/views/detail_berita.dart';
 
 class KategoriDetailPage extends StatefulWidget {
@@ -18,16 +17,43 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
   @override
   void initState() {
     super.initState();
-    final page = getPageForJudul(widget.judul);
-    _animeList = AnimeService.fetchTopAnime(page: page);
+    if (widget.judul == 'Anime Trending') {
+      _animeList = fetchAnimeTrending();
+    } else if (widget.judul == 'Anime Seasonal') {
+      _animeList = fetchAnimeSeasonal();
+    } else {
+      final page = getPageForJudul(widget.judul);
+      _animeList = AnimeService.fetchTopAnime(page: page, limit: 10);
+    }
+  }
+
+  Future<List<dynamic>> fetchAnimeTrending() async {
+    const apiUrl = 'https://api.jikan.moe/v4/top/anime?filter=airing';
+    try {
+      final response = await AnimeService.fetchFromApi(apiUrl);
+      final data = response['data'] ?? [];
+      return removeDuplicates(data);
+    } catch (e) {
+      throw Exception('Failed to fetch Anime Trending: $e');
+    }
+  }
+
+  Future<List<dynamic>> fetchAnimeSeasonal() async {
+    const apiUrl = 'https://api.jikan.moe/v4/seasons/2025/summer';
+    try {
+      final response = await AnimeService.fetchFromApi(apiUrl);
+      final data = response['data'] ?? [];
+      return removeDuplicates(data);
+    } catch (e) {
+      throw Exception('Failed to fetch Anime Seasonal: $e');
+    }
   }
 
   int getPageForJudul(String judul) {
     final pageMap = {
-      'rekomendasi': 1,
-      'anime viral': 2,
-      'berita terbaru': 3,
-      'trending topik': 4,
+      'Anime Trending': 1,
+      'Anime Populer': 2,
+      'Anime Seasonal': 4,
       'winter anime': 5,
       'spring anime': 6,
       'summer anime': 7,
@@ -42,44 +68,25 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
     return pageMap[judul.toLowerCase()] ?? 1;
   }
 
-  int getJumlahBerita(String judul) {
-    final lower = judul.toLowerCase();
-    if ([
-      'rekomendasi',
-      'anime viral',
-      'berita terbaru',
-      'trending topik'
-    ].contains(lower)) {
-      return 5;
-    } else if ([
-      'winter anime',
-      'spring anime',
-      'summer anime',
-      'fall anime'
-    ].contains(lower)) {
-      return 3;
-    } else if ([
-      'top 4/ranking',
-      'coming soon',
-      'mangaka highlight',
-      'karakter populer',
-      'rekomendasi mingguan',
-      'top 4 manga'
-    ].contains(lower)) {
-      return 4;
-    }
-    return 5;
+  List<dynamic> removeDuplicates(List<dynamic> animeList) {
+    final seen = <String>{};
+    return animeList.where((anime) {
+      final title = anime['title'];
+      if (seen.contains(title)) {
+        return false;
+      } else {
+        seen.add(title);
+        return true;
+      }
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD7D7FF),
       appBar: AppBar(
         title: Text(widget.judul),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        backgroundColor: const Color(0xFF5351DB),
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _animeList,
@@ -88,79 +95,36 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            final jumlah = getJumlahBerita(widget.judul);
-            final data = snapshot.data!.take(jumlah).toList();
-
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: data.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final anime = data[index];
-                final animePlace = AnimePlace(
-                  judul: anime['title'],
-                  gambar: anime['images']['jpg']['image_url'],
-                  sumberGambar: 'Image from Jikan API',
-                  deskripsi: [anime['synopsis'] ?? ''],
-                );
-
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => DetailBerita(animePlace: animePlace),
-                      ),
-                    );
-                  },
-                  child: _AnimeCard(animePlace: animePlace),
-                );
-              },
-            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No data available.'));
           }
+
+          final animeList = snapshot.data!;
+          return ListView.builder(
+            itemCount: animeList.length,
+            itemBuilder: (context, index) {
+              final anime = animeList[index];
+              return ListTile(
+                leading: Image.network(
+                  anime['images']['jpg']['image_url'],
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(anime['title']),
+                subtitle: Text(anime['type'] ?? 'Unknown'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailBerita(animePlace: anime),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         },
-      ),
-    );
-  }
-}
-
-class _AnimeCard extends StatelessWidget {
-  final AnimePlace animePlace;
-
-  const _AnimeCard({required this.animePlace});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              animePlace.gambar,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              animePlace.judul,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

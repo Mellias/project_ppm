@@ -75,62 +75,21 @@ class _SimpanBeritaState extends State<SimpanBerita> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          place.judul,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          place.title,
                           style: const TextStyle(
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          place.sumberGambar,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
+                          place.description,
+                          style: const TextStyle(fontSize: 14),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Hapus Berita?',
-                          style: TextStyle(
-                            color: Color(0xFF5A3DBD),
-                            fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          content: const Text(
-                            'Apakah kamu yakin ingin menghapus berita ini dari bookmark?',
-                            style: TextStyle(color: Color(0xFF5A3DBD)),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Batal', style: TextStyle(color: Colors.black)),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  bookmarkedPlaces.removeAt(index);
-                                });
-                                Navigator.pop(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: const Text('Hapus', style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
                   ),
                 ],
               ),
@@ -139,6 +98,26 @@ class _SimpanBeritaState extends State<SimpanBerita> {
         );
       },
     );
+  }
+
+  void fetchAnimeTrending() {
+    const apiUrl = 'https://api.jikan.moe/v4/top/anime?filter=airing';
+    // Fetch data from API and update UI
+  }
+
+  void fetchAnimeSeasonal() {
+    const apiUrl = 'https://api.jikan.moe/v4/seasons/2025/summer';
+    // Fetch data from API and update UI
+  }
+
+  void fetchRecentNews(String id) {
+    final apiUrl = 'https://api.jikan.moe/v4/anime/$id/news';
+    // Fetch data from API and update UI
+  }
+
+  void fetchAnimePopular() {
+    const apiUrl = 'https://api.jikan.moe/v4/top/anime';
+    // Fetch data from API and update UI
   }
 
   @override
