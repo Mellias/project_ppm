@@ -35,9 +35,9 @@ class _EditProfilPageState extends State<EditProfilPage> {
       Navigator.pop(context); // kembali ke halaman profil
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal update profil: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal update profil: $e')));
     }
   }
 
@@ -52,8 +52,8 @@ class _EditProfilPageState extends State<EditProfilPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profil'),
-        backgroundColor: const Color(0xFF5A3DBD),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFBEB9FF),
+        // foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
