@@ -12,6 +12,7 @@ import 'package:anime_hype/views/simpan_berita.dart';
 import 'package:anime_hype/views/edit_profil.dart';
 import 'package:anime_hype/views/navbar.dart'; // ✅ Pastikan ini mengandung class `MainScreen`
 import 'package:anime_hype/views/detail_page.dart';
+import 'package:anime_hype/views/news_detail.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +89,16 @@ class MyApp extends StatelessWidget {
           } else {
             return const Scaffold(
               body: Center(child: Text('Invalid data passed to detail page')),
+            );
+          }
+        },
+        '/news_detail': (context) {
+          final arguments = ModalRoute.of(context)!.settings.arguments;
+          if (arguments is Map<String, dynamic>) {
+            return NewsDetailPage(news: arguments);
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Invalid data passed to news detail page')),
             );
           }
         },

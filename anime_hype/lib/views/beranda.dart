@@ -1,7 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class BerandaBerita extends StatelessWidget {
+class BerandaBerita extends StatefulWidget {
   const BerandaBerita({super.key});
+
+  @override
+  State<BerandaBerita> createState() => _BerandaBeritaState();
+}
+
+class _BerandaBeritaState extends State<BerandaBerita> {
+  late Future<List<Map<String, dynamic>>> _animeNews;
+
+  @override
+  void initState() {
+    super.initState();
+    _animeNews = fetchAnimeNews();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAnimeNews() async {
+    const animeEndpoints = {
+      "One Piece": 21,
+      "Jujutsu Kaisen Season 2": 51009,
+      "Chainsaw Man": 44511,
+      "Kimetsu no Yaiba": 38000,
+      "Attack on Titan Final": 48583,
+      "SPY x FAMILY S2": 50602,
+      "Boku no Hero Academia": 31964,
+    };
+
+    try {
+      final responses = await Future.wait(
+        animeEndpoints.entries.map((entry) async {
+          final newsUrl = 'https://api.jikan.moe/v4/anime/${entry.value}/news';
+          final response = await http.get(Uri.parse(newsUrl));
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body)['data'] ?? [];
+            if (data.isNotEmpty) {
+              final news = data[0];
+              return <String, dynamic>{
+                "anime": entry.key,
+                "title": news['title'] ?? 'Unknown Title',
+                "image": news['images']?['jpg']?['image_url'] ?? '',
+                "author": news['author_username'] ?? 'Unknown',
+                "date": news['date'] ?? 'Unknown',
+                "intro": news['intro'] ?? 'No description available.',
+                "url": news['url'] ?? '',
+              };
+            }
+          }
+          return <String, dynamic>{}; // Return an empty map if no valid data is found
+        }),
+      );
+
+      return responses.where((news) => news.isNotEmpty).toList();
+    } catch (e) {
+      throw Exception('Error fetching anime news: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +97,7 @@ class BerandaBerita extends StatelessWidget {
                       ),
                       _buildCategoryCard(
                         context,
-                        'Anime Populer',
+                        'Karakter Populer',
                         'gambar/beranda/viral.png',
                       ),
                     ],
@@ -49,6 +105,8 @@ class BerandaBerita extends StatelessWidget {
                 },
               ),
             ),
+            const SizedBox(height: 24),
+            _buildAnimeNewsSection(),
           ],
         ),
       ),
@@ -153,6 +211,122 @@ class BerandaBerita extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnimeNewsSection() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _animeNews,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No news available.'));
+        }
+
+        final newsList = snapshot.data!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'Berita Anime Terbaru',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: newsList.length,
+              itemBuilder: (context, index) {
+                final news = newsList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/news_detail',
+                      arguments: news,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          if (news['image'] != null)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                news['image'],
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 100,
+                                    height: 100,
+                                    color: Colors.grey.shade300,
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.image_not_supported,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  news['title'] ?? 'Unknown Title',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Tanggal: ${news['date'] ?? 'Unknown Date'}',
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  news['intro'] ?? 'No description available.',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -9,102 +9,55 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(item['title'] ?? item['name'] ?? 'Detail'),
-        backgroundColor: const Color(0xFF5351DB),
+        title: Text(item['name'] ?? 'Unknown Name', style: const TextStyle(fontWeight: FontWeight.bold)), // Handle null name
+        backgroundColor: const Color(0xFFBEB9FF),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (item['images'] != null)
-              Center(
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  item['images']['jpg']['image_url'],
+                  item['images']['jpg']['image_url'] ?? '', // Handle null image URL
                   width: 200,
                   height: 200,
                   fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported, size: 48), // Fallback for invalid images
                 ),
               ),
+            ),
             const SizedBox(height: 16),
-            if (item['trailer'] != null && item['trailer']['url'] != null)
+            Text(
+              'Name: ${item['name'] ?? 'Unknown Name'}', // Handle null name
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Favorites: ${item['favorites'] ?? 0}', // Default to 0 if null
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            if (item['about'] != null && item['about'].isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Trailer:',
+                    'About:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {
-                      final url = item['trailer']['url'];
-                      if (url != null) {
-                        // Open the trailer URL (requires additional setup for URL launcher)
-                      }
-                    },
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: NetworkImage(item['trailer']['images']['medium_image_url']),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                  Text(
+                    item['about'],
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),
-            const SizedBox(height: 16),
-            if (item['synopsis'] != null)
-              Text(
-                'Deskripsi:',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            if (item['synopsis'] != null)
-              const SizedBox(height: 8),
-            if (item['synopsis'] != null)
-              Text(
-                item['synopsis'],
-                style: const TextStyle(fontSize: 16),
-              ),
-            const SizedBox(height: 16),
-            Text(
-              'Detail:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            _buildDetailList(item),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDetailList(Map<String, dynamic> data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: data.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${entry.key}: ',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: Text(
-                  entry.value.toString(),
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 }

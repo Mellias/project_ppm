@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/services/anime_service.dart';
-import 'package:anime_hype/views/detail_berita.dart';
+import 'package:anime_hype/views/detail_page.dart';
 
 class KategoriDetailPage extends StatefulWidget {
   final String judul;
@@ -21,6 +21,10 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
       _animeList = fetchAnimeTrending();
     } else if (widget.judul == 'Anime Seasonal') {
       _animeList = fetchAnimeSeasonal();
+    } else if (widget.judul == 'On Going Manga') {
+      _animeList = fetchOnGoingManga(); // Ensure correct API is used
+    } else if (widget.judul == 'Karakter Populer') {
+      _animeList = fetchPopularCharacters();
     } else {
       final page = getPageForJudul(widget.judul);
       _animeList = AnimeService.fetchTopAnime(page: page, limit: 10);
@@ -39,7 +43,7 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
   }
 
   Future<List<dynamic>> fetchAnimeSeasonal() async {
-    const apiUrl = 'https://api.jikan.moe/v4/seasons/2025/summer';
+    const apiUrl = 'https://api.jikan.moe/v4/seasons/now';
     try {
       final response = await AnimeService.fetchFromApi(apiUrl);
       final data = response['data'] ?? [];
@@ -49,10 +53,39 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
     }
   }
 
+  Future<List<dynamic>> fetchOnGoingManga() async {
+    const apiUrl = 'https://api.jikan.moe/v4/manga?order_by=published&sort=desc'; // Fixed URL
+    try {
+      final response = await AnimeService.fetchFromApi(apiUrl);
+      final data = response['data'] ?? [];
+      return removeDuplicates(data);
+    } catch (e) {
+      throw Exception('Failed to fetch On Going Manga: $e');
+    }
+  }
+
+  Future<List<dynamic>> fetchPopularCharacters() async {
+    const apiUrl = 'https://api.jikan.moe/v4/top/characters';
+    try {
+      final response = await AnimeService.fetchFromApi(apiUrl);
+      final data = response['data'] ?? [];
+      return data.map((character) {
+        return {
+          'name': character['name'] ?? 'Unknown Name', // Handle null name
+          'images': character['images'] ?? {}, // Handle null images
+          'favorites': character['favorites'] ?? 0, // Default to 0 if null
+          'about': character['about'] ?? 'No description available.', // Default description
+        };
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch popular characters: $e');
+    }
+  }
+
   int getPageForJudul(String judul) {
     final pageMap = {
       'Anime Trending': 1,
-      'Anime Populer': 2,
+      'Karakter Populer': 12,
       'Anime Seasonal': 4,
       'winter anime': 5,
       'spring anime': 6,
@@ -61,7 +94,6 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
       'top 4/ranking': 9,
       'coming soon': 10,
       'mangaka highlight': 11,
-      'karakter populer': 12,
       'rekomendasi mingguan': 13,
       'top 4 manga': 14,
     };
@@ -84,9 +116,12 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE6E6FA), // warna ungu muda
       appBar: AppBar(
-        title: Text(widget.judul),
-        backgroundColor: const Color(0xFF5351DB),
+        title: Text(widget.judul, style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _animeList,
@@ -99,28 +134,69 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
             return const Center(child: Text('No data available.'));
           }
 
-          final animeList = snapshot.data!;
+          final itemList = snapshot.data!;
           return ListView.builder(
-            itemCount: animeList.length,
+            padding: const EdgeInsets.all(16),
+            itemCount: itemList.length,
             itemBuilder: (context, index) {
-              final anime = animeList[index];
-              return ListTile(
-                leading: Image.network(
-                  anime['images']['jpg']['image_url'],
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                ),
-                title: Text(anime['title']),
-                subtitle: Text(anime['type'] ?? 'Unknown'),
+              final item = itemList[index];
+              return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => DetailBerita(animePlace: anime),
+                      builder: (_) => DetailPage(item: item), // Navigate to detail page
                     ),
                   );
                 },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          item['images']['jpg']['image_url'],
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['name'], // Display character name
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Favorites: ${item['favorites'] ?? 'Unknown'}', // Display favorites count
+                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );
