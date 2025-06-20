@@ -65,7 +65,8 @@ class _EditProfilPageState extends State<EditProfilPage> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nama Lengkap',
-                  prefixIcon: Icon(Icons.person),
+                  labelStyle: TextStyle(color: Color(0xFF5A3DBD), fontWeight: FontWeight.w500,),
+                  prefixIcon: Icon(Icons.person, color: Color(0xFF5A3DBD)),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -81,12 +82,12 @@ class _EditProfilPageState extends State<EditProfilPage> {
                 child: ElevatedButton(
                   onPressed: _updateProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5A3DBD),
+                    backgroundColor: const Color(0xFFBEB9FF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
                     'Simpan',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ),
