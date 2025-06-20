@@ -35,9 +35,9 @@ class _EditProfilPageState extends State<EditProfilPage> {
       Navigator.pop(context); // kembali ke halaman profil
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal update profil: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal update profil: $e')));
     }
   }
 
@@ -52,8 +52,8 @@ class _EditProfilPageState extends State<EditProfilPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profil'),
-        backgroundColor: const Color(0xFF5A3DBD),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFBEB9FF),
+        // foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -65,7 +65,8 @@ class _EditProfilPageState extends State<EditProfilPage> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nama Lengkap',
-                  prefixIcon: Icon(Icons.person),
+                  labelStyle: TextStyle(color: Color(0xFF5A3DBD), fontWeight: FontWeight.w500,),
+                  prefixIcon: Icon(Icons.person, color: Color(0xFF5A3DBD)),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -81,12 +82,12 @@ class _EditProfilPageState extends State<EditProfilPage> {
                 child: ElevatedButton(
                   onPressed: _updateProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5A3DBD),
+                    backgroundColor: const Color(0xFFBEB9FF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
                     'Simpan',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ),
