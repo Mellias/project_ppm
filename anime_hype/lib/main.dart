@@ -93,9 +93,20 @@ class MyApp extends StatelessWidget {
           }
         },
         '/news_detail': (context) {
-          final arguments = ModalRoute.of(context)!.settings.arguments;
-          if (arguments is Map<String, dynamic>) {
+          final arguments = ModalRoute.of(context)?.settings.arguments;
+          if (arguments is Map<String, dynamic> && arguments.isNotEmpty) {
             return NewsDetailPage(news: arguments);
+          } else if (arguments == null) {
+            // Kasus akses langsung/refresh di web
+            return const Scaffold(
+              body: Center(
+                child: Text(
+                  'Halaman detail berita tidak bisa diakses langsung.\nSilakan kembali ke halaman utama dan pilih berita dari daftar.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              ),
+            );
           } else {
             return const Scaffold(
               body: Center(child: Text('Invalid data passed to news detail page')),
