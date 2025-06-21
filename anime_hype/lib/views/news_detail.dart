@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 class NewsDetailPage extends StatelessWidget {
   final Map<String, dynamic> news;
 
-  const NewsDetailPage({Key? key, required this.news}) : super(key: key);
+  const NewsDetailPage({super.key, required this.news});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(news['title'] ?? 'News Detail'),
-      ),
+      appBar: AppBar(title: Text(news['title'] ?? 'News Detail')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
