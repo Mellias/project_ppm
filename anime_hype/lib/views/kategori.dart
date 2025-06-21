@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/services/anime_service.dart';
 import 'package:anime_hype/views/detail_page.dart';
+import 'package:anime_hype/views/character_detail.dart';
 
 class KategoriDetailPage extends StatefulWidget {
   final String judul;
@@ -17,14 +18,10 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.judul == 'Anime Trending') {
-      _animeList = fetchAnimeTrending();
+    if (widget.judul == 'Karakter Populer') {
+      _animeList = fetchPopularCharacters();
     } else if (widget.judul == 'Anime Seasonal') {
       _animeList = fetchAnimeSeasonal();
-    } else if (widget.judul == 'On Going Manga') {
-      _animeList = fetchOnGoingManga(); // Ensure correct API is used
-    } else if (widget.judul == 'Karakter Populer') {
-      _animeList = fetchPopularCharacters();
     } else {
       final page = getPageForJudul(widget.judul);
       _animeList = AnimeService.fetchTopAnime(page: page, limit: 10);
@@ -32,60 +29,25 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
   }
 
   Future<List<dynamic>> fetchAnimeTrending() async {
-    const apiUrl = 'https://api.jikan.moe/v4/top/anime?filter=airing';
-    try {
-      final response = await AnimeService.fetchFromApi(apiUrl);
-      final data = response['data'] ?? [];
-      return removeDuplicates(data);
-    } catch (e) {
-      throw Exception('Failed to fetch Anime Trending: $e');
-    }
+    return AnimeService.fetchAnimeTrending();
   }
 
   Future<List<dynamic>> fetchAnimeSeasonal() async {
-    const apiUrl = 'https://api.jikan.moe/v4/seasons/now';
-    try {
-      final response = await AnimeService.fetchFromApi(apiUrl);
-      final data = response['data'] ?? [];
-      return removeDuplicates(data);
-    } catch (e) {
-      throw Exception('Failed to fetch Anime Seasonal: $e');
-    }
+    return AnimeService.fetchAnimeSeasonal();
   }
 
-  Future<List<dynamic>> fetchOnGoingManga() async {
-    const apiUrl = 'https://api.jikan.moe/v4/manga?order_by=published&sort=desc'; // Fixed URL
-    try {
-      final response = await AnimeService.fetchFromApi(apiUrl);
-      final data = response['data'] ?? [];
-      return removeDuplicates(data);
-    } catch (e) {
-      throw Exception('Failed to fetch On Going Manga: $e');
-    }
+  Future<List<dynamic>> fetchMangaOngoing() async {
+    return AnimeService.fetchMangaOngoing();
   }
 
   Future<List<dynamic>> fetchPopularCharacters() async {
-    const apiUrl = 'https://api.jikan.moe/v4/top/characters';
-    try {
-      final response = await AnimeService.fetchFromApi(apiUrl);
-      final data = response['data'] ?? [];
-      return data.map((character) {
-        return {
-          'name': character['name'] ?? 'Unknown Name', // Handle null name
-          'images': character['images'] ?? {}, // Handle null images
-          'favorites': character['favorites'] ?? 0, // Default to 0 if null
-          'about': character['about'] ?? 'No description available.', // Default description
-        };
-      }).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch popular characters: $e');
-    }
+    return AnimeService.fetchPopularCharacters();
   }
 
   int getPageForJudul(String judul) {
     final pageMap = {
       'Anime Trending': 1,
-      'Karakter Populer': 12,
+      'Anime Populer': 2,
       'Anime Seasonal': 4,
       'winter anime': 5,
       'spring anime': 6,
@@ -94,6 +56,7 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
       'top 4/ranking': 9,
       'coming soon': 10,
       'mangaka highlight': 11,
+      'karakter populer': 12,
       'rekomendasi mingguan': 13,
       'top 4 manga': 14,
     };
@@ -111,6 +74,33 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
         return true;
       }
     }).toList();
+  }
+
+  Widget buildCharacterCard(dynamic character) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        leading: Image.network(
+          character['images']['jpg']['image_url'] ?? '',
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+        ),
+        title: Text(character['name'] ?? 'Unknown Name'),
+        subtitle: Text(character['favorites'] != null
+            ? '${character['favorites']} Favorites'
+            : 'No favorites data'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CharacterDetailPage(character: character),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -134,18 +124,28 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
             return const Center(child: Text('No data available.'));
           }
 
-          final itemList = snapshot.data!;
+          if (widget.judul == 'Karakter Populer') {
+            final characterList = snapshot.data!;
+            return ListView.builder(
+              itemCount: characterList.length,
+              itemBuilder: (context, index) {
+                return buildCharacterCard(characterList[index]);
+              },
+            );
+          }
+
+          final animeList = snapshot.data!;
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: itemList.length,
+            itemCount: animeList.length,
             itemBuilder: (context, index) {
-              final item = itemList[index];
+              final anime = animeList[index];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => DetailPage(item: item), // Navigate to detail page
+                      builder: (_) => DetailPage(item: anime),
                     ),
                   );
                 },
@@ -168,7 +168,7 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          item['images']['jpg']['image_url'],
+                          anime['images']['jpg']['image_url'],
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
@@ -180,7 +180,7 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item['name'], // Display character name
+                              anime['title'],
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -188,7 +188,7 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Favorites: ${item['favorites'] ?? 'Unknown'}', // Display favorites count
+                              'Release Date: ${anime['aired']['from'] ?? 'Unknown'}',
                               style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anime_hype/services/anime_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -19,41 +20,19 @@ class _BerandaBeritaState extends State<BerandaBerita> {
   }
 
   Future<List<Map<String, dynamic>>> fetchAnimeNews() async {
-    const animeEndpoints = {
-      "One Piece": 21,
-      "Jujutsu Kaisen Season 2": 51009,
-      "Chainsaw Man": 44511,
-      "Kimetsu no Yaiba": 38000,
-      "Attack on Titan Final": 48583,
-      "SPY x FAMILY S2": 50602,
-      "Boku no Hero Academia": 31964,
-    };
-
     try {
-      final responses = await Future.wait(
-        animeEndpoints.entries.map((entry) async {
-          final newsUrl = 'https://api.jikan.moe/v4/anime/${entry.value}/news';
-          final response = await http.get(Uri.parse(newsUrl));
-          if (response.statusCode == 200) {
-            final data = json.decode(response.body)['data'] ?? [];
-            if (data.isNotEmpty) {
-              final news = data[0];
-              return <String, dynamic>{
-                "anime": entry.key,
-                "title": news['title'] ?? 'Unknown Title',
-                "image": news['images']?['jpg']?['image_url'] ?? '',
-                "author": news['author_username'] ?? 'Unknown',
-                "date": news['date'] ?? 'Unknown',
-                "intro": news['intro'] ?? 'No description available.',
-                "url": news['url'] ?? '',
-              };
-            }
-          }
-          return <String, dynamic>{}; // Return an empty map if no valid data is found
-        }),
-      );
-
-      return responses.where((news) => news.isNotEmpty).toList();
+      final trendingAnime = await AnimeService.fetchAnimeTrending();
+      return trendingAnime.map((anime) {
+        return {
+          "anime": anime['title'] ?? 'Unknown Title',
+          "title": anime['title'] ?? 'Unknown Title',
+          "image": anime['images']?['jpg']?['image_url'] ?? '',
+          "author": anime['author_username'] ?? 'Unknown',
+          "date": anime['start_date'] ?? 'Unknown',
+          "intro": anime['synopsis'] ?? 'No description available.',
+          "url": anime['url'] ?? '',
+        };
+      }).toList();
     } catch (e) {
       throw Exception('Error fetching anime news: $e');
     }

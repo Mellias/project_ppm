@@ -23,4 +23,24 @@ class AnimeService {
     final response = await fetchFromApi(url);
     return response['data'] ?? [];
   }
+
+  static Future<List<dynamic>> fetchAnimeTrending() async {
+    final url = '$baseUrl/top/anime';
+    return fetchFromApi(url).then((response) => response['data'] ?? []);
+  }
+
+  static Future<List<dynamic>> fetchAnimeSeasonal() async {
+    final url = '$baseUrl/seasons/now';
+    return fetchFromApi(url).then((response) => response['data'] ?? []);
+  }
+
+  static Future<List<dynamic>> fetchMangaOngoing() async {
+    final url = '$baseUrl/top/manga?filter=publishing';
+    return fetchFromApi(url).then((response) => response['data'] ?? []);
+  }
+
+  static Future<List<dynamic>> fetchPopularCharacters() async {
+    final url = '$baseUrl/top/characters';
+    return fetchFromApi(url).then((response) => response['data'] ?? []);
+  }
 }

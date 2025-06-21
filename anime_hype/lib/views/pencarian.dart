@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:anime_hype/services/anime_service.dart';
 import 'dart:convert';
 
 class PencarianPage extends StatefulWidget {
@@ -11,28 +11,24 @@ class PencarianPage extends StatefulWidget {
 
 class _PencarianPageState extends State<PencarianPage> {
   final TextEditingController _searchController = TextEditingController();
-  Map<String, List<dynamic>> _searchResults = {'anime': [], 'manga': [], 'characters': []};
+  Map<String, List<dynamic>> _searchResults = {'anime': [], 'manga': [], 'seasonal': []};
   bool _isLoading = false;
 
-  Future<void> _searchAll(String query) async {
-    if (query.isEmpty) return;
-
+  void _searchAll(String query) async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final responses = await Future.wait([
-        http.get(Uri.parse('https://api.jikan.moe/v4/anime?q=$query')),
-        http.get(Uri.parse('https://api.jikan.moe/v4/manga?q=$query')),
-        http.get(Uri.parse('https://api.jikan.moe/v4/characters?q=$query')),
-      ]);
+      final animeResults = await AnimeService.fetchAnimeTrending();
+      final mangaResults = await AnimeService.fetchMangaOngoing();
+      final seasonalResults = await AnimeService.fetchAnimeSeasonal();
 
       setState(() {
         _searchResults = {
-          'anime': responses[0].statusCode == 200 ? json.decode(responses[0].body)['data'] ?? [] : [],
-          'manga': responses[1].statusCode == 200 ? json.decode(responses[1].body)['data'] ?? [] : [],
-          'characters': responses[2].statusCode == 200 ? json.decode(responses[2].body)['data'] ?? [] : [],
+          'anime': animeResults,
+          'manga': mangaResults,
+          'seasonal': seasonalResults,
         };
         _isLoading = false;
       });
@@ -98,7 +94,7 @@ class _PencarianPageState extends State<PencarianPage> {
   Widget _buildContent() {
     if (_searchResults['anime']!.isEmpty &&
         _searchResults['manga']!.isEmpty &&
-        _searchResults['characters']!.isEmpty) {
+        _searchResults['seasonal']!.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -130,7 +126,7 @@ class _PencarianPageState extends State<PencarianPage> {
         const SizedBox(height: 16),
         _buildCategorySection('Manga', _searchResults['manga'] ?? []),
         const SizedBox(height: 16),
-        _buildCategorySection('Characters', _searchResults['characters'] ?? []),
+        _buildCategorySection('Seasonal', _searchResults['seasonal'] ?? []),
       ],
     );
   }
