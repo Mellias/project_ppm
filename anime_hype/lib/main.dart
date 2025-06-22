@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // ✅ Tambahkan ini
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as dev;
 
 import 'package:anime_hype/views/login.dart';
@@ -10,7 +10,7 @@ import 'package:anime_hype/views/kategori.dart';
 import 'package:anime_hype/views/bantuan.dart';
 import 'package:anime_hype/views/simpan_berita.dart';
 import 'package:anime_hype/views/edit_profil.dart';
-import 'package:anime_hype/views/navbar.dart'; // ✅ Pastikan ini mengandung class `MainScreen`
+import 'package:anime_hype/views/navbar.dart';
 import 'package:anime_hype/views/detail_page.dart';
 import 'package:anime_hype/views/news_detail.dart';
 
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            return const MainScreen(); // ✅ Pastikan ini benar-benar ada
+            return const MainScreen(); // Pastikan ini benar-benar ada
           }
 
           return const LoginPage();
@@ -109,7 +109,9 @@ class MyApp extends StatelessWidget {
             );
           } else {
             return const Scaffold(
-              body: Center(child: Text('Invalid data passed to news detail page')),
+              body: Center(
+                child: Text('Invalid data passed to news detail page'),
+              ),
             );
           }
         },
