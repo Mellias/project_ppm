@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:anime_hype/services/anime_service.dart';
-// import 'dart:convert';
+// import 'package:anime_hype/services/anime_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PencarianPage extends StatefulWidget {
   const PencarianPage({super.key});
@@ -11,24 +12,65 @@ class PencarianPage extends StatefulWidget {
 
 class _PencarianPageState extends State<PencarianPage> {
   final TextEditingController _searchController = TextEditingController();
-  Map<String, List<dynamic>> _searchResults = {'anime': [], 'manga': [], 'seasonal': []};
+  Map<String, List<dynamic>> _searchResults = {
+    'anime': [],
+    'manga': [],
+    'character': [],
+  };
   bool _isLoading = false;
 
+  // Tambahkan fungsi pencarian detail
+  Future<List<dynamic>> searchAnime(String query) async {
+    final url = Uri.parse('https://api.jikan.moe/v4/anime?q=$query&limit=10');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData['data'];
+    } else {
+      throw Exception('Gagal memuat data anime');
+    }
+  }
+
+  Future<List<dynamic>> searchManga(String query) async {
+    final url = Uri.parse('https://api.jikan.moe/v4/manga?q=$query&limit=10');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData['data'];
+    } else {
+      throw Exception('Gagal memuat data manga');
+    }
+  }
+
+  Future<List<dynamic>> searchCharacter(String query) async {
+    final url = Uri.parse(
+      'https://api.jikan.moe/v4/characters?q=$query&limit=10',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData['data'];
+    } else {
+      throw Exception('Gagal memuat data karakter');
+    }
+  }
+
   void _searchAll(String query) async {
+    if (query.trim().isEmpty) return;
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final animeResults = await AnimeService.fetchAnimeTrending();
-      final mangaResults = await AnimeService.fetchMangaOngoing();
-      final seasonalResults = await AnimeService.fetchAnimeSeasonal();
+      final animeResults = await searchAnime(query);
+      final mangaResults = await searchManga(query);
+      final characterResults = await searchCharacter(query);
 
       setState(() {
         _searchResults = {
           'anime': animeResults,
           'manga': mangaResults,
-          'seasonal': seasonalResults,
+          'character': characterResults,
         };
         _isLoading = false;
       });
@@ -94,7 +136,7 @@ class _PencarianPageState extends State<PencarianPage> {
   Widget _buildContent() {
     if (_searchResults['anime']!.isEmpty &&
         _searchResults['manga']!.isEmpty &&
-        _searchResults['seasonal']!.isEmpty) {
+        _searchResults['character']!.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -126,7 +168,7 @@ class _PencarianPageState extends State<PencarianPage> {
         const SizedBox(height: 16),
         _buildCategorySection('Manga', _searchResults['manga'] ?? []),
         const SizedBox(height: 16),
-        _buildCategorySection('Seasonal', _searchResults['seasonal'] ?? []),
+        _buildCategorySection('Karakter', _searchResults['character'] ?? []),
       ],
     );
   }
@@ -151,21 +193,22 @@ class _PencarianPageState extends State<PencarianPage> {
             return ListTile(
               leading: item['images'] != null
                   ? Image.network(
-                      item['images']['jpg']['image_url'],
+                      // Untuk karakter, struktur gambar sedikit berbeda
+                      title == 'Karakter'
+                          ? item['images']['jpg']['image_url']
+                          : item['images']['jpg']['image_url'],
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
                     )
                   : const Icon(Icons.image_not_supported),
               title: Text(item['title'] ?? item['name'] ?? 'Unknown'),
-              subtitle: Text(item['type'] ?? 'Unknown'),
+              subtitle: Text(
+                item['type'] ?? (title == 'Karakter' ? 'Character' : 'Unknown'),
+              ),
               onTap: () {
                 if (item is Map<String, dynamic>) {
-                  Navigator.pushNamed(
-                    context,
-                    '/detail',
-                    arguments: item,
-                  );
+                  Navigator.pushNamed(context, '/detail', arguments: item);
                 }
               },
             );
@@ -175,24 +218,13 @@ class _PencarianPageState extends State<PencarianPage> {
     );
   }
 
+  // ..._buildRekomendasiList dan _buildTopikGrid tetap sama...
   Widget _buildRekomendasiList(BuildContext context) {
     final List<Map<String, String>> rekomendasi = [
-      {
-        'title': 'Winter Anime',
-        'image': 'gambar/search/av1.png',
-      },
-      {
-        'title': 'Spring Anime',
-        'image': 'gambar/search/av2.png',
-      },
-      {
-        'title': 'Summer Anime',
-        'image': 'gambar/search/av3.png',
-      },
-      {
-        'title': 'Fall Anime',
-        'image': 'gambar/search/av4.png',
-      },
+      {'title': 'Winter Anime', 'image': 'gambar/search/av1.png'},
+      {'title': 'Spring Anime', 'image': 'gambar/search/av2.png'},
+      {'title': 'Summer Anime', 'image': 'gambar/search/av3.png'},
+      {'title': 'Fall Anime', 'image': 'gambar/search/av4.png'},
     ];
 
     return Column(
@@ -231,7 +263,7 @@ class _PencarianPageState extends State<PencarianPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -257,11 +289,7 @@ class _PencarianPageState extends State<PencarianPage> {
       children: topik.map((judul) {
         return GestureDetector(
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/kategori_detail',
-              arguments: judul,
-            );
+            Navigator.pushNamed(context, '/kategori_detail', arguments: judul);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -271,10 +299,7 @@ class _PencarianPageState extends State<PencarianPage> {
             ),
             child: Text(
               judul,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
             ),
           ),
         );
