@@ -364,12 +364,13 @@ class _BerandaBeritaState extends State<BerandaBerita> {
                           Navigator.pushNamed(
                             context,
                             '/news_detail',
-                            arguments: {
-                              ...berita,
-                              'animeTitle': news['animeTitle'],
-                              'animeImage': news['animeImage'],
-                              'animeId': news['animeId'],
-                            },
+                            arguments: arguments,
+                            // arguments: {
+                            //   ...berita,
+                            //   'animeTitle': news['animeTitle'],
+                            //   'animeImage': news['animeImage'],
+                            //   'animeId': news['animeId'],
+                            // },
                           );
                         },
                         child: Card(
@@ -500,7 +501,7 @@ class _BerandaBeritaState extends State<BerandaBerita> {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                     if (index != newsList.length - 1)
                       const SizedBox(height: 12),
                   ],

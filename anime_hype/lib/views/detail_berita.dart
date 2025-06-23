@@ -13,6 +13,7 @@ class DetailBerita extends StatefulWidget {
   State<DetailBerita> createState() => _DetailBeritaState();
 }
 
+// Membuat fungsi simpan berita ke firestore
 class _DetailBeritaState extends State<DetailBerita> {
   bool get isBookmarked => bookmarkedPlaces.contains(widget.animePlace);
 

@@ -14,22 +14,28 @@ class NewsDetailPage extends StatefulWidget {
 
 class _NewsDetailPageState extends State<NewsDetailPage> {
   bool _isSaved = false;
-  final _user = FirebaseAuth.instance.currentUser;
+  User? _user;
 
   @override
   void initState() {
     super.initState();
+    _user = FirebaseAuth.instance.currentUser;
     _checkIfSaved();
   }
 
   Future<void> _checkIfSaved() async {
     if (_user == null) return;
-    final doc = await FirebaseFirestore.instance
+
+    final docRef = FirebaseFirestore.instance
         .collection('saved_news')
-        .doc(_user.uid)
+        .doc(_user!.uid)
         .collection('items')
-        .doc(widget.news['url'] ?? widget.news['title'])
-        .get();
+        .doc(widget.news['url'] ?? widget.news['title']);
+
+    final doc = await docRef.get();
+
+    if (!mounted) return;
+
     setState(() {
       _isSaved = doc.exists;
     });
@@ -37,36 +43,61 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Future<void> _toggleSave() async {
     if (_user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Silakan login untuk menyimpan berita.')),
-      );
+      _showSnackbar('Silakan login untuk menyimpan berita.');
       return;
     }
+
     final docRef = FirebaseFirestore.instance
         .collection('saved_news')
-        .doc(_user.uid)
+        .doc(_user!.uid)
         .collection('items')
         .doc(widget.news['url'] ?? widget.news['title']);
+
     if (_isSaved) {
       await docRef.delete();
+      if (!mounted) return;
       setState(() => _isSaved = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Berita dihapus dari simpanan.')),
-      );
+      _showSnackbar('Berita dihapus dari simpanan.');
     } else {
       await docRef.set(widget.news);
+      if (!mounted) return;
       setState(() => _isSaved = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Berita disimpan!')),
-      );
+      _showSnackbar('Berita disimpan!');
     }
+  }
+
+  Future<void> _launchNewsUrl() async {
+    final uri = Uri.parse(widget.news['url']);
+    bool launched = false;
+
+    if (await canLaunchUrl(uri)) {
+      try {
+        await launchUrl(uri);
+        launched = true;
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
+    if (!launched) {
+      _showSnackbar('Tidak dapat membuka link.');
+    }
+  }
+
+  void _showSnackbar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final news = widget.news;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.news['title'] ?? 'News Detail'),
+        title: Text(news['title'] ?? 'News Detail'),
         actions: [
           IconButton(
             icon: Icon(_isSaved ? Icons.bookmark : Icons.bookmark_border),
@@ -77,14 +108,13 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            if (widget.news['image'] != null)
+            if (news['image'] != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  widget.news['image'],
+                  news['image'],
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -103,45 +133,30 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
               ),
             const SizedBox(height: 16),
             Text(
-              widget.news['title'] ?? 'Unknown Title',
+              news['title'] ?? 'Unknown Title',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Author: ${widget.news['author'] ?? 'MyAnimeList'}',
+              'Author: ${news['author'] ?? 'MyAnimeList'}',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 8),
             Text(
-              'Date: ${widget.news['date']?.substring(0, 10) ?? 'Unknown Date'}',
+              'Date: ${news['date']?.substring(0, 10) ?? 'Unknown Date'}',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Text(
-              widget.news['intro'] ?? widget.news['excerpt'] ?? 'No description available.',
+              news['intro'] ??
+                  news['excerpt'] ??
+                  'No description available.',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            if (widget.news['url'] != null)
+            if (news['url'] != null)
               ElevatedButton(
-                onPressed: () async {
-                  final uri = Uri.parse(widget.news['url']);
-                  if (await canLaunchUrl(uri)) {
-                    try {
-                      await launchUrl(uri); // gunakan mode default
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Gagal membuka link.')),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Tidak dapat membuka link.'),
-                      ),
-                    );
-                  }
-                },
+                onPressed: _launchNewsUrl,
                 child: const Text('Baca di Sumber'),
               ),
           ],
