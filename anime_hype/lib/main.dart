@@ -117,6 +117,7 @@ class MyApp extends StatelessWidget {
             );
           }
         },
+        // '/trending-news': (context) => const TrendingNewsPage(),
       },
 
       // Route dinamis untuk kategori
