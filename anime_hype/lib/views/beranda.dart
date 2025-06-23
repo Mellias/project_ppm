@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:anime_hype/services/anime_service.dart';
+import 'anime_trending.dart';
+import 'saved_news.dart';
+import 'anime_seasonal.dart';
+import 'ongoing_manga.dart';
+import 'popular_characters.dart';
 
 class BerandaBerita extends StatefulWidget {
   const BerandaBerita({super.key});
@@ -131,7 +136,32 @@ class _BerandaBeritaState extends State<BerandaBerita> {
   Widget _buildCategoryCard(BuildContext context, String title, String imagePath) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/kategori_detail', arguments: title);
+        if (title == 'Anime Trending') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AnimeTrendingPage()),
+          );
+        } else if (title == 'Saved News') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SavedNewsPage()),
+          );
+        } else if (title == 'Anime Seasonal') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AnimeSeasonalPage()),
+          );
+        } else if (title == 'Ongoing Manga') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const OngoingMangaPage()),
+          );
+        } else if (title == 'Karakter Populer') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PopularCharactersPage()),
+          );
+        }
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
