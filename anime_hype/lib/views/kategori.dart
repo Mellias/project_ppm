@@ -88,9 +88,11 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
           fit: BoxFit.cover,
         ),
         title: Text(character['name'] ?? 'Unknown Name'),
-        subtitle: Text(character['favorites'] != null
-            ? '${character['favorites']} Favorites'
-            : 'No favorites data'),
+        subtitle: Text(
+          character['favorites'] != null
+              ? '${character['favorites']} Favorites'
+              : 'No favorites data',
+        ),
         onTap: () {
           Navigator.push(
             context,
@@ -108,7 +110,10 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFE6E6FA), // warna ungu muda
       appBar: AppBar(
-        title: Text(widget.judul, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          widget.judul,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -145,7 +150,8 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => DetailPage(item: anime),
+                      builder: (_) =>
+                          DetailPage(id: anime['mal_id'], type: 'anime'),
                     ),
                   );
                 },
@@ -189,7 +195,10 @@ class _KategoriDetailPageState extends State<KategoriDetailPage> {
                             const SizedBox(height: 4),
                             Text(
                               'Release Date: ${anime['aired']['from'] ?? 'Unknown'}',
-                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),

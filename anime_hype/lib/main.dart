@@ -84,8 +84,10 @@ class MyApp extends StatelessWidget {
         '/edit_profil': (context) => const EditProfilPage(),
         '/detail': (context) {
           final arguments = ModalRoute.of(context)!.settings.arguments;
-          if (arguments is Map<String, dynamic>) {
-            return DetailPage(item: arguments);
+          if (arguments is Map<String, dynamic> &&
+              arguments['id'] != null &&
+              arguments['type'] != null) {
+            return DetailPage(id: arguments['id'], type: arguments['type']);
           } else {
             return const Scaffold(
               body: Center(child: Text('Invalid data passed to detail page')),

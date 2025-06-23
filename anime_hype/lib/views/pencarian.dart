@@ -190,25 +190,58 @@ class _PencarianPageState extends State<PencarianPage> {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
+            if (item == null || item is! Map) {
+              return const SizedBox();
+            }
+            // Judul universal (anime: title, manga: title, karakter: name)
+            final String displayTitle =
+                (item['title'] != null || item['name'] != null)
+                ? (item['title'] ?? item['name'])
+                : 'Unknown';
+            // Subtitle universal (anime/manga: type, karakter: Character)
+            final String displaySubtitle = (item['type'] != null)
+                ? item['type']
+                : (title.toLowerCase() == 'karakter' ? 'Character' : 'Unknown');
             return ListTile(
-              leading: item['images'] != null
+              leading:
+                  (item['images'] != null &&
+                      item['images'] is Map &&
+                      (item['images']['jpg'] != null &&
+                          item['images']['jpg'] is Map &&
+                          item['images']['jpg']['image_url'] != null))
                   ? Image.network(
-                      // Untuk karakter, struktur gambar sedikit berbeda
-                      title == 'Karakter'
-                          ? item['images']['jpg']['image_url']
-                          : item['images']['jpg']['image_url'],
+                      item['images']['jpg']['image_url'],
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
                     )
-                  : const Icon(Icons.image_not_supported),
-              title: Text(item['title'] ?? item['name'] ?? 'Unknown'),
-              subtitle: Text(
-                item['type'] ?? (title == 'Karakter' ? 'Character' : 'Unknown'),
-              ),
+                  : (item['image_url'] != null
+                        ? Image.network(
+                            item['image_url'],
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(Icons.image_not_supported)),
+              title: Text(displayTitle),
+              subtitle: Text(displaySubtitle),
               onTap: () {
-                if (item is Map<String, dynamic>) {
-                  Navigator.pushNamed(context, '/detail', arguments: item);
+                if (item['mal_id'] != null) {
+                  final id = item['mal_id'];
+                  // Penyesuaian type agar sesuai endpoint Jikan Moe
+                  String type;
+                  if (title.toLowerCase() == 'anime') {
+                    type = 'anime';
+                  } else if (title.toLowerCase() == 'manga') {
+                    type = 'manga';
+                  } else {
+                    type = 'character';
+                  }
+                  Navigator.pushNamed(
+                    context,
+                    '/detail',
+                    arguments: {'id': id, 'type': type},
+                  );
                 }
               },
             );
