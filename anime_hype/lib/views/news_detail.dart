@@ -33,12 +33,9 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         .doc(widget.news['url'] ?? widget.news['title']);
 
     final doc = await docRef.get();
-
     if (!mounted) return;
 
-    setState(() {
-      _isSaved = doc.exists;
-    });
+    setState(() => _isSaved = doc.exists);
   }
 
   Future<void> _toggleSave() async {
@@ -78,7 +75,6 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     }
 
     if (!mounted) return;
-
     if (!launched) {
       _showSnackbar('Tidak dapat membuka link.');
     }
@@ -97,69 +93,89 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(news['title'] ?? 'News Detail'),
+        backgroundColor: const Color(0xFFBEB9FF),
+        title: Text(
+          news['title'] ?? 'News Detail',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: Icon(_isSaved ? Icons.bookmark : Icons.bookmark_border),
+            icon: Icon(
+              _isSaved ? Icons.bookmark : Icons.bookmark_border,
+              color: _isSaved ? const Color(0xFF5351DB) : null,
+            ),
             tooltip: _isSaved ? 'Hapus dari Simpanan' : 'Simpan Berita',
             onPressed: _toggleSave,
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            if (news['image'] != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  news['image'],
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 200,
-                      color: Colors.grey.shade300,
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                          color: Colors.grey,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (news['image'] != null)
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      news['image'],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (_, __, ___) => Container(
+                        height: 200,
+                        color: Colors.grey.shade300,
+                        child: const Center(
+                          child: Icon(Icons.image_not_supported, size: 50),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              Text(
+                news['title'] ?? 'Unknown Title',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5351DB),
                 ),
               ),
-            const SizedBox(height: 16),
-            Text(
-              news['title'] ?? 'Unknown Title',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Author: ${news['author'] ?? 'MyAnimeList'}',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Date: ${news['date']?.substring(0, 10) ?? 'Unknown Date'}',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              news['intro'] ??
-                  news['excerpt'] ??
-                  'No description available.',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            if (news['url'] != null)
-              ElevatedButton(
-                onPressed: _launchNewsUrl,
-                child: const Text('Baca di Sumber'),
+              const SizedBox(height: 8),
+              Text(
+                'Author: ${news['author'] ?? 'MyAnimeList'}',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                'Date: ${news['date']?.substring(0, 10) ?? 'Unknown Date'}',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                news['intro'] ??
+                    news['excerpt'] ??
+                    'No description available.',
+                textAlign: TextAlign.justify,
+                style: const TextStyle(fontSize: 15, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              if (news['url'] != null)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _launchNewsUrl,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5351DB),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Baca di Sumber'),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

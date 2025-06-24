@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:share_plus/share_plus.dart';
+
+// List bookmark lokal (bisa dipindahkan ke state global atau provider)
+List<Map<String, dynamic>> bookmarkedAnimeList = [];
 
 class DetailAnimePage extends StatefulWidget {
   final Map<String, dynamic> anime;
@@ -12,46 +16,57 @@ class DetailAnimePage extends StatefulWidget {
 }
 
 class _DetailAnimePageState extends State<DetailAnimePage> {
-  Future<void> saveAnime() async {
+  bool get isBookmarked =>
+      bookmarkedAnimeList.any((item) => item['mal_id'] == widget.anime['mal_id']);
+
+  Future<void> saveToFirestore(Map<String, dynamic> anime) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to save anime.')),
-      );
-      return;
-    }
+    if (user == null) return;
 
     final firestore = FirebaseFirestore.instance;
-    final existingAnime = await firestore
+
+    // Cek apakah sudah ada data serupa
+    final existing = await firestore
         .collection('saved_news')
         .where('uid', isEqualTo: user.uid)
-        .where('title', isEqualTo: widget.anime['title'] ?? widget.anime['name'])
+        .where('mal_id', isEqualTo: anime['mal_id']) // gunakan ID unik dari API
         .get();
 
-    if (!mounted) return;
-
-    if (existingAnime.docs.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Item is already saved.')),
-      );
-      return;
-    }
+    if (existing.docs.isNotEmpty) return;
 
     await firestore.collection('saved_news').add({
       'uid': user.uid,
-      'title': widget.anime['title'] ?? widget.anime['name'] ?? 'Unknown Title',
-      'image': widget.anime['images']?['jpg']?['image_url'] ?? '',
-      'synopsis': widget.anime['synopsis'] ?? widget.anime['about'] ?? 'No synopsis available',
-      'release_date': widget.anime['aired']?['from'] ?? 'Unknown',
+      'mal_id': anime['mal_id'],
+      'title': anime['title'] ?? anime['name'] ?? 'Unknown Title',
+      'image': anime['images']?['jpg']?['image_url'] ?? '',
+      'synopsis': anime['synopsis'] ?? anime['about'] ?? 'No synopsis available',
+      'release_date': anime['aired']?['from'] ?? 'Unknown',
       'timestamp': FieldValue.serverTimestamp(),
     });
+  }
 
-    if (!mounted) return;
+  void toggleBookmark() async {
+    final anime = widget.anime;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item saved successfully!')),
-    );
+    if (isBookmarked) {
+      setState(() {
+        bookmarkedAnimeList.removeWhere((item) => item['mal_id'] == anime['mal_id']);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bookmark dihapus')),
+      );
+    } else {
+      setState(() {
+        bookmarkedAnimeList.add(anime);
+      });
+
+      await saveToFirestore(anime);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Anime disimpan')),
+      );
+    }
   }
 
   @override
@@ -60,8 +75,25 @@ class _DetailAnimePageState extends State<DetailAnimePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(anime['title'] ?? anime['name'] ?? 'Unknown Title'),
-        backgroundColor: const Color(0xFF5351DB),
+        title: Text(anime['title'] ?? anime['name'] ?? 'Detail Anime'),
+        backgroundColor: const Color(0xFFBEB9FF),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () {
+              final shareText =
+                  '${anime['title'] ?? anime['name']}\n\n${anime['synopsis'] ?? 'No synopsis available.'}';
+              Share.share(shareText);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color: isBookmarked ? const Color(0xFF5351DB) : null,
+            ),
+            onPressed: toggleBookmark,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -74,17 +106,17 @@ class _DetailAnimePageState extends State<DetailAnimePage> {
                 child: Image.network(
                   anime['images']?['jpg']?['image_url'] ?? '',
                   width: double.infinity,
-                  height: 200,
+                  height: 220,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.image_not_supported, size: 100),
+                      const Icon(Icons.broken_image, size: 100),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Synopsis:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -93,23 +125,9 @@ class _DetailAnimePageState extends State<DetailAnimePage> {
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
-            if (anime.containsKey('aired'))
-              Text(
-                'Release Date: ${anime['aired']?['from'] ?? 'Unknown'}',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: saveAnime,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5351DB),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text('Save'),
-              ),
+            Text(
+              'Release Date: ${anime['aired']?['from'] ?? 'Unknown'}',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
