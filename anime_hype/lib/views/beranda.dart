@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:anime_hype/services/anime_service.dart';
 import 'anime_trending.dart';
-import 'saved_news.dart';
+import 'simpan_berita.dart';
 import 'anime_seasonal.dart';
 import 'ongoing_manga.dart';
 import 'popular_characters.dart';
@@ -237,7 +237,7 @@ class _BerandaBeritaState extends State<BerandaBerita> {
         } else if (title == 'Saved News') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SavedNewsPage()),
+            MaterialPageRoute(builder: (_) => const SimpanBerita()),
           );
         } else if (title == 'Anime Seasonal') {
           Navigator.push(
